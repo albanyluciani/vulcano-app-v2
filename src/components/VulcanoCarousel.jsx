@@ -1,6 +1,5 @@
-import "../Carousel.css";
-
-export function Carousel() {
+import "../styles/VulcanoCarousel.css";
+const Carousel = () => {
   return (
     <section className="carrusel-container">
       <div className="carrusel">
@@ -46,3 +45,5 @@ export function Carousel() {
     </section>
   );
 }
+
+export default Carousel;

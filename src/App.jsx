@@ -1,10 +1,11 @@
 import { useState } from 'react'
+import VulcanHome from './pages/VulcanHome';
 
 function App() {
-  const [count, setCount] = useState(0)
 
   return (
     <>
+      <VulcanHome />
     </>
   )
 }

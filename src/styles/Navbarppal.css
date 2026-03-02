@@ -1,0 +1,80 @@
+/* =========================================
+   COMPONENTE: NAVBAR PRINCIPAL
+   Descripción: Barra de navegación superior con logo y selector de idioma
+   Clases con prefijo: vh- (Vulcano Home)
+   ========================================= */
+
+/* --- Navbar (Barra de navegación) ---
+    Clase: .vh-navbar
+    Función: Contenedor principal de la barra de navegación */
+.vh-navbar {
+  height: 80px;                            /* Establece altura fija de 70px */
+  border-bottom: 2px solid var(--color-blush);  /* Añade borde inferior rosa */
+  display: flex;                           /* Activa modelo flexbox */
+  justify-content: center;                 /* Centra contenido horizontalmente */
+  align-items: center;                     /* Centra contenido verticalmente */
+  padding: 0 20px;                         /* Espaciado lateral de 20px */
+  background: var(--color-dark);           /* Fondo oscuro */
+}
+
+/* --- Contenido del Navbar ---
+    Clase: .vh-nav-content
+    Función: Wrapper interno que limita el ancho y distribuye logo e idioma */
+.vh-nav-content {
+  width: 100%;                             /* Ocupa todo el ancho disponible */
+  max-width: 1000px;                       /* Limita ancho máximo a 1000px */
+  display: flex;                           /* Activa modelo flexbox */
+  justify-content: space-between;          /* Distribuye logo e idioma a los extremos */
+  align-items: center;                     /* Centra verticalmente los elementos */
+}
+
+/* --- Logo ---
+    Clase: .vh-logo
+    Función: Contenedor del ícono y texto "VULCANO APP" */
+.vh-logo {
+  font-size: 32px;                         /* Define el tamaño del texto VULCANO APP */
+  font-weight: 800;                        /* Hace el texto más grueso/bold */
+  color: var(--color-white);               /* Color blanco del texto */
+  letter-spacing: 1px;                     /* Espaciado entre letras */
+  display: flex;                           /* Alinea el icono y texto en fila horizontal */
+  align-items: center;                     /* Centra verticalmente el icono y texto */
+  gap: 12px;                               /* Espacio entre el icono y el texto */
+}
+
+/* --- Ícono del Logo ---
+    Clase: .vh-logo-icon
+    Función: Imagen del ícono de Vulcano junto al nombre */
+.vh-logo-icon {
+  height: 50px;                           /* Aumenta la altura del icono a 100px */
+  width: 50x;                            /* Aumenta el ancho del icono a 100px */
+  object-fit: contain;                     /* Mantiene la proporción sin distorsionar la imagen */
+}
+
+/* --- Selector de Idioma ---
+    Clase: .vh-lang
+    Función: Texto del selector de idioma en el lado derecho del navbar */
+.vh-lang {
+  color: var(--color-white);               /* Texto blanco */
+  font-weight: 700;                        /* Texto más grueso/bold */
+  font-size: 14px;                         /* Tamaño de fuente más pequeño que el logo */
+}
+
+/* =========================================
+   MEDIA QUERIES - Responsividad NavbarPpal
+   ========================================= */
+
+/* BREAKPOINT: Móviles (max-width: 768px) */
+@media (max-width: 768px) {
+  .vh-logo {
+    font-size: 22px;                       /* Reduce tamaño del texto del logo en móviles */
+  }
+
+  .vh-logo-icon {
+    height: 60px;                          /* Reduce el ícono en móviles */
+    width: 60px;                           /* Reduce el ícono en móviles */
+  }
+
+  .vh-lang {
+    font-size: 11px;                       /* Reduce tamaño del texto de idioma en móviles */
+  }
+}
