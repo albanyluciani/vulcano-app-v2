@@ -7,7 +7,7 @@
 
 /* Línea decorativa con degradado rosado en la parte superior */
 .vf-top-border {
-  height: 3px;
+  height: 2px;
   background: linear-gradient(
     90deg,
     transparent 0%,
@@ -20,12 +20,12 @@
 
 /* Grid de 3 columnas centrado con ancho máximo */
 .vf-container {
-  max-width: 1100px;
+  max-width: 1000px;
   margin: 0 auto;
-  padding: 16px 32px 12px;
+  padding: 10px 24px 8px;
   display: grid;
   grid-template-columns: 1.6fr 1fr 1.4fr;
-  gap: 24px;
+  gap: 16px;
 }
 
 
@@ -35,33 +35,33 @@
 .vf-brand {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 4px;
 }
 
 .vf-logo {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
 }
 
 .vf-logo-icon {
-  height: 36px;
-  width: 36px;
+  height: 26px;
+  width: 26px;
   object-fit: contain;
 }
 
 .vf-logo-text {
-  font-size: 16px;
+  font-size: 13px;
   font-weight: 800;
   color: var(--color-white);
   letter-spacing: 1.5px;
 }
 
 .vf-brand-desc {
-  font-size: 11px;
-  line-height: 1.5;
+  font-size: 10px;
+  line-height: 1.4;
   color: var(--color-blush);
-  max-width: 260px;
+  max-width: 220px;
 }
 
 
@@ -69,13 +69,13 @@
 /* --- TÍTULO DE CADA COLUMNA --- */
 
 .vf-col-title {
-  font-size: 10px;
+  font-size: 9px;
   font-weight: 800;
   letter-spacing: 2px;
   text-transform: uppercase;
   color: var(--color-cream);
-  margin-bottom: 8px;
-  padding-bottom: 5px;
+  margin-bottom: 6px;
+  padding-bottom: 4px;
   border-bottom: 1px solid rgba(211, 171, 176, 0.25);
 }
 
@@ -87,27 +87,27 @@
   list-style: none;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 2px;
 }
 
 .vf-nav-link {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 5px;
   color: var(--color-blush);
   text-decoration: none;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 700;
   transition: color 0.2s ease, gap 0.2s ease;
 }
 
 .vf-nav-link:hover {
   color: var(--color-cream);
-  gap: 10px;
+  gap: 9px;
 }
 
 .vf-link-arrow {
-  font-size: 7px;
+  font-size: 6px;
   opacity: 0.6;
 }
 
@@ -119,7 +119,7 @@
   list-style: none;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 3px;
 }
 
 .vf-team-member {
@@ -129,7 +129,7 @@
 .vf-member-link {
   display: flex;
   align-items: center;
-  gap: 7px;
+  gap: 6px;
   text-decoration: none;
   transition: transform 0.2s ease;
 }
@@ -139,12 +139,12 @@
 }
 
 .vf-member-avatar {
-  width: 22px;
-  height: 22px;
+  width: 18px;
+  height: 18px;
   border-radius: 50%;
   background-color: var(--color-mid);
   color: var(--color-white);
-  font-size: 10px;
+  font-size: 9px;
   font-weight: 800;
   display: flex;
   align-items: center;
@@ -160,7 +160,7 @@
 }
 
 .vf-member-name {
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 700;
   color: var(--color-white);
   line-height: 1.2;
@@ -168,7 +168,7 @@
 }
 
 .vf-member-role {
-  font-size: 10px;
+  font-size: 9px;
   color: var(--color-mid);
   display: block;
 }
@@ -179,13 +179,13 @@
 
 .vf-bottom-bar {
   border-top: 1px solid rgba(211, 171, 176, 0.2);
-  padding: 8px 32px;
+  padding: 6px 24px;
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   flex-wrap: wrap;
-  font-size: 11px;
+  font-size: 10px;
   color: var(--color-mid);
   font-weight: 600;
   letter-spacing: 0.5px;
@@ -197,24 +197,77 @@
 }
 
 .vf-bottom-bar span:last-child {
-  font-size: 14px;
+  font-size: 12px;
 }
 
 
 
 /* --- MEDIA QUERIES --- */
 
+/* BREAKPOINT: Tablets (max-width: 1024px) */
 @media (max-width: 1024px) {
   .vf-container {
     grid-template-columns: 1fr 1fr;
-    gap: 24px;
+    gap: 16px;
+    padding: 10px 20px 8px;
+  }
+
+  /* La columna de marca ocupa toda la fila superior */
+  .vf-brand {
+    grid-column: 1 / -1;
+    flex-direction: row;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .vf-brand-desc {
+    max-width: 100%;
+    margin: 0;
   }
 }
 
+/* BREAKPOINT: Móviles (max-width: 768px) */
 @media (max-width: 768px) {
   .vf-container {
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    padding: 10px 16px 8px;
+  }
+
+  /* Marca en fila completa arriba */
+  .vf-brand {
+    grid-column: 1 / -1;
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .vf-brand-desc {
+    font-size: 9px;
+    max-width: 100%;
+  }
+
+  .vf-bottom-bar {
+    padding: 6px 16px;
+    font-size: 9px;
+  }
+
+  .vf-bottom-bar span:last-child {
+    font-size: 11px;
+  }
+}
+
+/* BREAKPOINT: Móviles muy pequeños (max-width: 480px) */
+@media (max-width: 480px) {
+  .vf-container {
     grid-template-columns: 1fr;
-    gap: 20px;
-    padding: 16px 24px 12px;
+    gap: 10px;
+    padding: 10px 14px 8px;
+  }
+
+  .vf-brand {
+    grid-column: auto;
+    flex-direction: column;
+    gap: 4px;
   }
 }
