@@ -7,8 +7,8 @@
 /* --- Reset base de página ---
     Función: Establece altura y fondo global de la página */
 body {
-  height: 100vh;                           /* Ocupa todo el alto de la ventana */
-  overflow: hidden;                        /* Oculta barras de desplazamiento */
+  height: auto;                           /* Ocupa todo el alto de la ventana */
+  overflow: auto;                        /* Oculta barras de desplazamiento */
   background: var(--color-white);          /* Fondo blanco en toda la página */
 }
 
@@ -49,6 +49,7 @@ body {
   justify-content: center;                 /* Centra contenido horizontalmente */
   align-items: center;                     /* Centra contenido verticalmente */
   padding: 40px 20px;                      /* Espaciado interno de 40px superior/inferior y 20px lateral */
+  min-height: calc(87vh - 80px); /* Asegura que la sección ocupe al menos el alto del viewport menos la altura del navbar */
 }
 
 /* --- Contenido del Hero ---

@@ -46,7 +46,7 @@
     Función: Imagen del ícono de Vulcano junto al nombre */
 .vh-logo-icon {
   height: 50px;                           /* Aumenta la altura del icono a 100px */
-  width: 50x;                            /* Aumenta el ancho del icono a 100px */
+  width: 50px;                            /* Aumenta el ancho del icono a 100px */
   object-fit: contain;                     /* Mantiene la proporción sin distorsionar la imagen */
 }
 
