@@ -145,6 +145,13 @@
   box-shadow: 0 6px 0 #3b1010;
 }
 
+.cp-btn-danger:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
 /* ---- ESTADOS (loading / error / vacío) ---- */
 
 

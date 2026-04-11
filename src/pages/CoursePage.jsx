@@ -54,6 +54,7 @@ const CoursePage = () => {
   const [courseToDelete, setCourseToDelete] = useState(null);
   const [toast, setToast] = useState(null);
   const [undoSeconds, setUndoSeconds] = useState(0);
+  const [deleteConfirmText, setDeleteConfirmText] = useState('');
 
   const showToast = (msg) => {
     setToast(msg);
@@ -101,6 +102,7 @@ const CoursePage = () => {
 
   const confirmDelete = course => {
     setCourseToDelete(course);
+    setDeleteConfirmText('');
     setModal('confirm');
   };
 
@@ -108,6 +110,7 @@ const CoursePage = () => {
     const course = courseToDelete;
     setModal(null);
     setCourseToDelete(null);
+    setDeleteConfirmText('');
 
     if (pendingDelete) {
       clearTimeout(pendingDelete.timeoutId);
@@ -349,11 +352,33 @@ const CoursePage = () => {
       {/* Modal: confirmar eliminación */}
       {modal === 'confirm' && courseToDelete && (
         <Modal title="¿Eliminar curso?" onClose={() => setModal(null)}>
-          <div className="flex flex-col gap-4">
-            <p className="cp-subheading">¿Estás seguro de que deseas eliminar este curso? Tendrás 20 segundos para deshacer esta acción.</p>
-            <div className="flex gap-3 justify-end">
+          <div className="flex flex-col gap-5">
+            <p className="cp-subheading" style={{ fontSize: '14px' }}>
+              ¿Estás seguro de que deseas eliminar el curso <strong>{courseToDelete.name}</strong>? 
+              Esta acción se puede deshacer durante los primeros 20 segundos.
+            </p>
+
+            <div className="cp-form-group">
+              <label className="cp-label">Escribe <span className="text-red-600 font-black">ELIMINAR</span> para confirmar:</label>
+              <input
+                type="text"
+                className="cp-input"
+                placeholder="Escribe aquí..."
+                value={deleteConfirmText}
+                onChange={(e) => setDeleteConfirmText(e.target.value)}
+                autoFocus
+              />
+            </div>
+
+            <div className="flex gap-3 justify-end mt-2">
               <button className="cp-btn-secondary" onClick={() => setModal(null)}>Cancelar</button>
-              <button className="cp-btn-danger" onClick={initiateDelete}>Sí, eliminar</button>
+              <button
+                className="cp-btn-danger"
+                onClick={initiateDelete}
+                disabled={deleteConfirmText !== 'ELIMINAR'}
+              >
+                Sí, eliminar curso
+              </button>
             </div>
           </div>
         </Modal>
