@@ -1,0 +1,274 @@
+/* ============================================================
+   Layout.css
+   ------------------------------------------------------------
+   Estilos para la página principal del sistema (post-login).
+   Usa las variables CSS definidas en index.css:
+     --color-dark:   #472825  → fondo del sidebar
+     --color-mid:    #96786F  → texto secundario
+     --color-blush:  #D3ABB0  → bordes y elementos suaves
+     --color-cream:  #FDE4BC  → botones y textos claros en sidebar
+     --color-white:  #FFF4E2  → fondo del área main
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap');
+
+/* ── Contenedor principal — flex-row, ocupa toda la pantalla ── */
+.layout-container {
+  display: flex;
+  height: 100vh;
+  overflow: hidden;           /* Evitamos scroll en el contenedor padre */
+  background-color: var(--color-white);
+  font-family: 'Nunito', sans-serif;
+}
+
+/* ================================================================
+   SIDEBAR LATERAL IZQUIERDO
+   ================================================================ */
+.layout-sidebar {
+  width: 260px;
+  min-width: 260px;           /* No se encoge en pantallas pequeñas */
+  height: 100vh;
+  background-color: var(--color-dark);
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  box-shadow: 4px 0 24px rgba(71, 40, 37, 0.15);
+  position: relative;
+  z-index: 10;
+}
+
+/* ── ZONA SUPERIOR: Foto y nombre del usuario ─────────────── */
+.sidebar-profile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 36px 20px 28px;
+  border-bottom: 1px solid rgba(255, 244, 226, 0.1);
+}
+
+/* Imagen circular del avatar */
+.sidebar-avatar {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid var(--color-cream);
+  margin-bottom: 14px;
+  background-color: var(--color-mid);
+  flex-shrink: 0;
+  transition: transform 0.2s;
+}
+
+.sidebar-avatar:hover {
+  transform: scale(1.05);
+}
+
+/* Placeholder cuando el usuario no tiene foto */
+.sidebar-avatar-placeholder {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  background-color: rgba(150, 120, 111, 0.25);
+  border: 3px solid var(--color-cream);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 40px;
+  margin-bottom: 14px;
+  flex-shrink: 0;
+}
+
+/* Nombre completo del usuario */
+.sidebar-name {
+  color: var(--color-cream);
+  font-size: 16px;
+  font-weight: 800;
+  text-align: center;
+  margin: 0 0 4px;
+  letter-spacing: 0.2px;
+}
+
+/* @username debajo del nombre */
+.sidebar-username {
+  color: var(--color-blush);
+  font-size: 12px;
+  font-weight: 600;
+  text-align: center;
+  opacity: 0.75;
+  margin: 0;
+}
+
+/* ── ZONA MEDIA: Botones de navegación ───────────────────── */
+.sidebar-nav {
+  flex: 1;                    /* Ocupa todo el espacio disponible entre perfil y footer */
+  padding: 24px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* Botón de navegación (ej: "Cursos") */
+.sidebar-nav-btn {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  padding: 14px 18px;
+  border: none;
+  border-radius: 14px;
+  background: transparent;
+  color: var(--color-cream);
+  font-family: 'Nunito', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.15s;
+  text-align: left;
+  letter-spacing: 0.2px;
+}
+
+.sidebar-nav-btn:hover {
+  background: rgba(253, 228, 188, 0.12);
+  transform: translateX(4px);      /* Deslizamiento sutil hacia la derecha */
+}
+
+.sidebar-nav-btn.active {
+  background: rgba(253, 228, 188, 0.2);
+}
+
+/* Icono dentro del botón de navegación */
+.btn-icon {
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+/* ── ZONA INFERIOR: Acciones secundarias ─────────────────── */
+.sidebar-footer {
+  padding: 16px;
+  border-top: 1px solid rgba(255, 244, 226, 0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+/* Botones del footer (Modificar Perfil, Cerrar sesión) */
+.sidebar-footer-btn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 12px 18px;
+  border: none;
+  border-radius: 12px;
+  background: transparent;
+  color: var(--color-blush);
+  font-family: 'Nunito', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+  text-align: left;
+}
+
+.sidebar-footer-btn:hover {
+  background: rgba(211, 171, 176, 0.1);
+  color: var(--color-cream);
+}
+
+/* Variante "danger" para el botón de cerrar sesión */
+.sidebar-footer-btn.danger:hover {
+  background: rgba(220, 80, 80, 0.1);
+  color: #ff9090;
+}
+
+/* ================================================================
+   ÁREA MAIN — Contenido de bienvenida
+   ================================================================ */
+.layout-main {
+  flex: 1;                    /* Ocupa todo el ancho restante */
+  overflow-y: auto;
+  background-color: var(--color-white);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+}
+
+/* Emoji grande de bienvenida */
+.layout-welcome-icon {
+  font-size: 72px;
+  margin-bottom: 20px;
+  animation: float 3s ease-in-out infinite;
+}
+
+/* Animación flotante sutil para el ícono */
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-8px); }
+}
+
+/* Título de bienvenida */
+.layout-welcome-title {
+  font-size: 30px;
+  font-weight: 900;
+  color: var(--color-dark);
+  margin: 0 0 10px;
+  text-align: center;
+}
+
+/* Subtítulo instructivo */
+.layout-welcome-subtitle {
+  font-size: 15px;
+  color: var(--color-mid);
+  text-align: center;
+  max-width: 440px;
+  line-height: 1.7;
+  margin: 0;
+}
+
+/* Tarjetas de acceso rápido debajo del mensaje */
+.layout-action-cards {
+  display: flex;
+  gap: 20px;
+  margin-top: 44px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+/* Cada tarjeta de acceso rápido */
+.layout-action-card {
+  background: #fff;
+  border: 2px solid var(--color-blush);
+  border-radius: 20px;
+  padding: 32px 36px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+  min-width: 150px;
+  font-family: 'Nunito', sans-serif;
+  user-select: none;
+}
+
+.layout-action-card:hover {
+  border-color: var(--color-dark);
+  transform: translateY(-5px);
+  box-shadow: 0 10px 28px rgba(71, 40, 37, 0.12);
+}
+
+.layout-action-card:active {
+  transform: translateY(-2px);
+}
+
+.layout-action-card-icon {
+  font-size: 38px;
+}
+
+.layout-action-card-title {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--color-dark);
+}

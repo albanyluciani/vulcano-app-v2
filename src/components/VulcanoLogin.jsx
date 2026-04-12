@@ -1,6 +1,59 @@
+// ============================================================
+// VulcanoLogin.jsx
+// ------------------------------------------------------------
+// Este componente es el formulario de inicio de sesión.
+// Cuando el usuario hace clic en "Ingresar":
+//   1. Tomamos el username y password de los inputs
+//   2. Llamamos a loginUser() que habla con el backend
+//   3. Si el backend dice OK → redirigimos a /layout
+//   4. Si hay error → mostramos un mensaje en pantalla
+// ============================================================
 import "../styles/VulcanoLogin.css";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
+import { loginUser } from "../services/api"; // función que llama a POST /api/auth/login
 
 const VulcanoLogin = () => {
+  const navigate = useNavigate();
+
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError]       = useState("");    // mensaje de error
+  const [loading, setLoading]   = useState(false); // indicador de carga
+
+  // ----------------------------------------------------------
+  // sigIn: se ejecuta cuando el usuario hace clic en "Ingresar"
+  // Envía username y password al backend (POST /api/auth/login)
+  // Si la respuesta es 200 → guarda la sesión y redirige
+  // Si la respuesta es 401 → muestra el error del backend
+  // ----------------------------------------------------------
+  async function sigIn(e) {
+    e.preventDefault();
+    setError("");      // limpiamos error anterior
+    setLoading(true);
+
+    try {
+      // loginUser ahora devuelve el objeto User COMPLETO con su perfil:
+      // { id, username, password, profile: { firstName, lastName, email, profilePictureUrl, ... } }
+      const userData = await loginUser(username, password);
+
+      // Guardamos el objeto completo en localStorage.
+      // Así el Layout puede leer firstName, profilePictureUrl, id, etc.
+      // sin necesidad de hacer otra petición al backend.
+      localStorage.setItem("user", JSON.stringify(userData));
+
+      // Redirigimos al Layout
+      navigate("/layout");
+    } catch (err) {
+      // El mensaje de error viene directo del backend
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+
   return (
     <div className="h-screen flex flex-col items-center justify-center">
       <div className="login-card">
@@ -10,9 +63,12 @@ const VulcanoLogin = () => {
           <input
             className="login-input"
             type="text"
-            name="email"
+            name="username"
             placeholder="Correo o usuario"
-            autocomplete="username"
+            autoComplete="username"
+            // onChange: cada vez que el usuario escribe, actualizamos el estado
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
           />
         </div>
 
@@ -23,7 +79,9 @@ const VulcanoLogin = () => {
               type="password"
               name="password"
               placeholder="Contraseña"
-              autocomplete="current-password"
+              autoComplete="current-password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
             />
             <a href="#" className="forgot-link">
               ¿Se Te
@@ -33,7 +91,22 @@ const VulcanoLogin = () => {
           </div>
         </div>
 
-        <button className="btn-login">Ingresar</button>
+        {/* Mostramos el error solo si la variable "error" tiene texto */}
+        {error && (
+          <p style={{ color: "red", marginBottom: "8px", fontSize: "14px" }}>
+            ⚠️ {error}
+          </p>
+        )}
+
+        {/* onClick: llamamos a handleLogin cuando el usuario hace clic */}
+        {/* disabled: bloqueamos el botón mientras carga para evitar doble clic */}
+        <button
+          className="btn-login"
+          onClick={sigIn}
+          disabled={loading}
+        >
+          {loading ? "Cargando..." : "Ingresar"}
+        </button>
 
         <div className="divider">o</div>
 
@@ -65,6 +138,13 @@ const VulcanoLogin = () => {
             </svg>
             Facebook
           </button>
+        </div>
+
+        <div className="login-footer-text" style={{ marginTop: "16px" }}>
+          ¿No tienes cuenta?{" "}
+          <Link to="/Register" style={{ color: "#D3ABB0", fontWeight: 800, textDecoration: "none" }}>
+            Regístrate aquí
+          </Link>
         </div>
 
         <div className="login-footer-text">

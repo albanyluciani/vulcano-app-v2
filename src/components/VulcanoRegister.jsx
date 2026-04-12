@@ -1,524 +1,333 @@
 // ============================================================
 // VulcanoRegister.jsx
 // ------------------------------------------------------------
-// Este es el COMPONENTE PRINCIPAL del formulario de registro.
-//
-// ¿Qué es un componente?
-//   Es un bloque reutilizable de React que tiene su propia
-//   apariencia (JSX) y su propia lógica (JavaScript).
-//
-// ¿Qué hace este componente?
-//   1. Muestra el formulario al usuario
-//   2. Guarda lo que el usuario escribe (con useState)
-//   3. Valida que los datos sean correctos
-//   4. Llama al servicio para enviar los datos al API
-//   5. Muestra mensajes de éxito o error
-//   6. Redirige al dashboard si el registro fue exitoso
+// Layout de DOS COLUMNAS en desktop para evitar scroll.
+// La foto de perfil se convierte a Base64 con FileReader
+// y se envía como string al campo profilePictureUrl del backend.
 // ============================================================
 
-// ----------------------------------------------------------
-// IMPORTS (importaciones)
-// ----------------------------------------------------------
-// Importamos las "herramientas" que vamos a necesitar:
-// ----------------------------------------------------------
-
-// useState → nos permite guardar y actualizar datos dentro del componente
-// (ej: lo que el usuario escribe en los inputs)
-import { useState } from "react";
-
-// useNavigate → nos permite cambiar de página programáticamente
-// (ej: después de registrarse, ir al dashboard)
-import { useNavigate } from "react-router-dom";
-
-// Link → componente para crear enlaces entre páginas de React
-// (como <a href> pero para React Router)
-import { Link } from "react-router-dom";
-
-// Importamos la función que creamos en userService.js
-// para enviar los datos al API
+import { useState, useRef } from "react";
+import { useNavigate, Link } from "react-router-dom";
 import { registerUser } from "../services/userService";
 
-
-// ----------------------------------------------------------
-// COMPONENTE: VulcanoRegister
-// ----------------------------------------------------------
 const VulcanoRegister = () => {
+  const navigate  = useNavigate();
+  const fileRef   = useRef(null); // referencia al input[type=file] oculto
 
-  // --------------------------------------------------------
-  // HOOK: useNavigate
-  // --------------------------------------------------------
-  // Creamos la función "navigate" que usaremos para
-  // redirigir al usuario a otra página después del registro.
-  // Ejemplo: navigate('/dashboard') → va al dashboard
-  // --------------------------------------------------------
-  const navigate = useNavigate();
-
-
-  // --------------------------------------------------------
-  // ESTADO 1: formData
-  // --------------------------------------------------------
-  // useState nos permite crear una "caja" para guardar datos.
-  // formData → contiene todos los valores de los inputs
-  // setFormData → es la función para actualizar esos valores
-  //
-  // Cada campo empieza vacío ("") para que el formulario
-  // inicie sin datos prellenados.
-  // --------------------------------------------------------
   const [formData, setFormData] = useState({
-    // Campos de la entidad User
-    username: "",
-    password: "",
-    confirmPassword: "", // Este campo NO va al API, solo sirve para validar
-
-    // Campos de la entidad UserProfile
-    firstName: "",
-    lastName: "",
-    email: "",
-    phoneNumber: "",   // Opcional
-    bio: "",           // Opcional
-    profilePictureUrl: "", // Opcional
-    birthDate: "",     // Opcional
+    username:        "",
+    password:        "",
+    confirmPassword: "",
+    firstName:       "",
+    lastName:        "",
+    email:           "",
+    phoneNumber:     "",
+    bio:             "",
+    birthDate:       "",
+    profilePictureUrl: "", // se llenará con Base64
   });
 
+  // Vista previa local (Object URL o Base64)
+  const [preview, setPreview] = useState(null);
 
-  // --------------------------------------------------------
-  // ESTADO 2: error
-  // --------------------------------------------------------
-  // Aquí guardamos el mensaje de error que le mostramos
-  // al usuario si algo sale mal.
-  // Empieza en null (sin error).
-  // --------------------------------------------------------
-  const [error, setError] = useState(null);
-
-
-  // --------------------------------------------------------
-  // ESTADO 3: loading
-  // --------------------------------------------------------
-  // Nos indica si estamos esperando respuesta del API.
-  // Cuando loading = true, mostramos un texto de carga
-  // y desactivamos el botón para evitar múltiples envíos.
-  // --------------------------------------------------------
+  const [error,   setError]   = useState(null);
   const [loading, setLoading] = useState(false);
-
-
-  // --------------------------------------------------------
-  // ESTADO 4: success
-  // --------------------------------------------------------
-  // Nos indica si el registro fue exitoso.
-  // Cuando success = true, mostramos un mensaje de éxito.
-  // --------------------------------------------------------
   const [success, setSuccess] = useState(false);
 
-
-  // --------------------------------------------------------
-  // FUNCIÓN: handleChange
-  // --------------------------------------------------------
-  // Esta función se ejecuta CADA VEZ que el usuario
-  // escribe algo en cualquier input del formulario.
-  //
-  // PARÁMETRO:
-  //   e → el "evento" del input (contiene info del campo)
-  //
-  // ¿Cómo funciona?
-  //   1. Lee el "name" del input (ej: "username")
-  //   2. Lee el "value" del input (lo que escribió el usuario)
-  //   3. Actualiza solo ese campo en formData
-  // --------------------------------------------------------
+  // ── Manejador de texto / fecha / etc. ─────────────────────
   const handleChange = (e) => {
-    // Desestructuramos: sacamos name y value del evento
     const { name, value } = e.target;
-
-    // Actualizamos formData:
-    // "...formData" → copiamos todos los campos anteriores
-    // [name]: value → actualizamos solo el campo que cambió
-    setFormData({ ...formData, [name]: value });
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+  // ── Manejador de imagen ───────────────────────────────────
+  // Convierte el archivo seleccionado a Base64 y guarda en formData
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
 
-  // --------------------------------------------------------
-  // FUNCIÓN: validateForm
-  // --------------------------------------------------------
-  // Revisa que los datos del formulario sean correctos
-  // ANTES de enviarlos al API.
-  //
-  // RETORNA:
-  //   null → si todo está bien (sin errores)
-  //   string → el mensaje de error si algo está mal
-  // --------------------------------------------------------
+    // Validar tipo de archivo
+    if (!file.type.startsWith("image/")) {
+      setError("El archivo seleccionado no es una imagen válida.");
+      return;
+    }
+
+    // Validar tamaño: máximo 2 MB
+    if (file.size > 2 * 1024 * 1024) {
+      setError("La imagen no debe superar los 2 MB.");
+      return;
+    }
+
+    setError(null);
+
+    // Generamos la vista previa rápida (URL de objeto local)
+    setPreview(URL.createObjectURL(file));
+
+    // Convertimos a Base64 para enviar al backend
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      setFormData((prev) => ({
+        ...prev,
+        profilePictureUrl: ev.target.result, // string "data:image/jpeg;base64,..."
+      }));
+    };
+    reader.readAsDataURL(file);
+  };
+
+  // Eliminar imagen seleccionada
+  const handleRemoveImage = () => {
+    setPreview(null);
+    setFormData((prev) => ({ ...prev, profilePictureUrl: "" }));
+    if (fileRef.current) fileRef.current.value = "";
+  };
+
+  // ── Validación ────────────────────────────────────────────
   const validateForm = () => {
-    // Verificar que los campos obligatorios no estén vacíos
-    // trim() elimina espacios en blanco al inicio y al final
-    if (!formData.username.trim()) return "El nombre de usuario es obligatorio.";
-    if (!formData.password.trim()) return "La contraseña es obligatoria.";
+    if (!formData.username.trim())        return "El nombre de usuario es obligatorio.";
+    if (!formData.password.trim())        return "La contraseña es obligatoria.";
     if (!formData.confirmPassword.trim()) return "Debes confirmar tu contraseña.";
-    if (!formData.firstName.trim()) return "El nombre es obligatorio.";
-    if (!formData.lastName.trim()) return "El apellido es obligatorio.";
-    if (!formData.email.trim()) return "El correo electrónico es obligatorio.";
-
-    // Verificar que la contraseña y la confirmación sean iguales
-    if (formData.password !== formData.confirmPassword) {
-      return "Las contraseñas no coinciden. Por favor verifica.";
-    }
-
-    // Verificar que la contraseña tenga al menos 6 caracteres
-    if (formData.password.length < 6) {
+    if (!formData.firstName.trim())       return "El nombre es obligatorio.";
+    if (!formData.lastName.trim())        return "El apellido es obligatorio.";
+    if (!formData.email.trim())           return "El correo electrónico es obligatorio.";
+    if (formData.password !== formData.confirmPassword)
+      return "Las contraseñas no coinciden.";
+    if (formData.password.length < 6)
       return "La contraseña debe tener al menos 6 caracteres.";
-    }
-
-    // Verificar formato básico de email (debe contener @ y un punto)
-    if (!formData.email.includes("@") || !formData.email.includes(".")) {
+    if (!formData.email.includes("@") || !formData.email.includes("."))
       return "El correo electrónico no tiene un formato válido.";
-    }
-
-    // Si llegamos aquí, todo está bien → retornamos null (sin error)
     return null;
   };
 
-
-  // --------------------------------------------------------
-  // FUNCIÓN: handleSubmit
-  // --------------------------------------------------------
-  // Esta función se ejecuta cuando el usuario hace clic
-  // en el botón "Crear cuenta" (submit del formulario).
-  //
-  // PARÁMETRO:
-  //   e → el evento del formulario
-  // --------------------------------------------------------
+  // ── Envío ─────────────────────────────────────────────────
   const handleSubmit = async (e) => {
-    // Evitamos que la página se recargue (comportamiento por
-    // defecto del formulario HTML al hacer submit)
     e.preventDefault();
-
-    // ---- Limpiar estados anteriores ----
-    // Limpiamos cualquier error previo antes de intentar de nuevo
     setError(null);
     setSuccess(false);
-
-    // ---- Validar el formulario ----
     const errorMessage = validateForm();
-
-    // Si hay un error de validación → mostramos el error y PARAMOS
-    if (errorMessage) {
-      setError(errorMessage);
-      return; // "return" detiene la ejecución de la función aquí
-    }
-
-    // ---- Intentar registrar el usuario ----
-    // Activamos el estado de carga (mostramos "Registrando...")
+    if (errorMessage) { setError(errorMessage); return; }
     setLoading(true);
-
-    // try/catch → intentamos hacer algo, y si falla lo "capturamos"
     try {
-      // Llamamos a la función del servicio para enviar los datos al API
-      // "await" → esperamos la respuesta antes de continuar
       await registerUser(formData);
-
-      // Si llegamos aquí, el registro fue EXITOSO
       setSuccess(true);
-
-      // Esperamos 2 segundos para que el usuario vea el mensaje
-      // y luego lo redirigimos al dashboard
-      setTimeout(() => {
-        navigate("/dashboard");
-      }, 2000); // 2000 milisegundos = 2 segundos
-
+      setTimeout(() => navigate("/Login"), 2000);
     } catch (err) {
-      // Si algo salió mal (error del API, sin conexión, etc.)
-      // guardamos el mensaje de error para mostrárselo al usuario
       setError(err.message || "Ocurrió un error inesperado. Intenta de nuevo.");
-
     } finally {
-      // "finally" siempre se ejecuta, haya éxito o error
-      // Desactivamos el estado de carga
       setLoading(false);
     }
   };
 
+  // ── Clases base ───────────────────────────────────────────
+  const inputClass =
+    "w-full p-2.5 border-2 border-[#D3ABB0] rounded-lg text-[#472825] bg-[#FFF4E2] " +
+    "placeholder-[#96786F] text-sm focus:outline-none focus:border-[#96786F] " +
+    "focus:ring-2 focus:ring-[#96786F] focus:ring-opacity-30 transition-colors duration-200";
 
-  // --------------------------------------------------------
-  // RETURN: Lo que se muestra en pantalla (JSX)
-  // --------------------------------------------------------
-  // JSX es la "mezcla" de HTML y JavaScript que usa React.
-  // Todo lo que está aquí se convierte en HTML real en el
-  // navegador.
-  // --------------------------------------------------------
+  const labelClass = "block font-semibold text-[#472825] mb-1 text-sm";
+
   return (
-    // Contenedor que ocupa toda la pantalla
-    // min-h-screen → altura mínima igual a la pantalla
-    // bg-gray-950 → fondo casi negro (tema volcán)
-    // flex flex-col items-center justify-center → centra el contenido
-    // py-10 → padding vertical para que no quede pegado en móviles
-    <div className="min-h-screen bg-gray-950 flex flex-col items-center justify-center py-10">
+    <div className="min-h-screen bg-[#FFF4E2] flex items-center justify-center px-4 py-8">
 
-      {/* ---- TARJETA DEL FORMULARIO ---- */}
-      {/* Caja blanca/oscura centrada que contiene el formulario */}
-      <div className="bg-gray-900 border border-gray-700 rounded-2xl shadow-2xl w-full max-w-lg px-8 py-10 mx-4">
+      <div className="w-full max-w-3xl bg-[#FFF4E2] border-2 border-[#D3ABB0] rounded-xl shadow-md px-6 py-8">
 
-        {/* ---- ENCABEZADO ---- */}
-        {/* Título y subtítulo del formulario */}
-        <div className="text-center mb-8">
-          {/* Emoji decorativo del volcán */}
-          <div className="text-5xl mb-3">🌋</div>
-          <h1 className="text-3xl font-bold text-white">Crear Cuenta</h1>
-          <p className="text-gray-400 text-sm mt-2">
-            Únete a la comunidad Vulcano
-          </p>
+        {/* ── Encabezado ── */}
+        <div className="text-center mb-5">
+          <div className="text-4xl mb-2">🌋</div>
+          <h1 className="text-2xl font-bold text-[#472825]">Crear Cuenta</h1>
+          <p className="text-[#96786F] text-sm mt-1">Únete a la comunidad Vulcano</p>
         </div>
 
-
-        {/* ---- MENSAJE DE ÉXITO ---- */}
-        {/* Solo se muestra cuando success = true */}
+        {/* ── Alertas ── */}
         {success && (
-          <div className="bg-green-900 border border-green-600 text-green-300 px-4 py-3 rounded-lg mb-6 text-sm text-center">
-            ✅ ¡Cuenta creada exitosamente! Redirigiendo al dashboard...
+          <div className="mb-4 p-3 rounded-lg border-2 border-[#D3ABB0] bg-[#FDE4BC] text-[#472825] text-sm text-center font-semibold">
+            ✅ ¡Cuenta creada exitosamente! Redirigiendo al login...
           </div>
         )}
-
-        {/* ---- MENSAJE DE ERROR ---- */}
-        {/* Solo se muestra cuando hay un error (error !== null) */}
         {error && (
-          <div className="bg-red-900 border border-red-600 text-red-300 px-4 py-3 rounded-lg mb-6 text-sm text-center">
-            ❌ {error}
+          <div className="mb-4 p-3 rounded-lg border-2 border-[#D3ABB0] text-[#472825] text-sm text-center font-semibold">
+            ⚠️ {error}
           </div>
         )}
 
-
-        {/* ---- FORMULARIO ---- */}
-        {/* onSubmit → llama a handleSubmit cuando el usuario hace submit */}
-        <form onSubmit={handleSubmit} className="space-y-5">
-
-          {/* ==================================================== */}
-          {/* SECCIÓN: Datos de acceso (entidad User)               */}
-          {/* ==================================================== */}
-          <div>
-            <h2 className="text-orange-400 text-xs font-semibold uppercase tracking-widest mb-3">
-              Datos de acceso
-            </h2>
-
-            {/* -- Campo: Nombre de usuario -- */}
-            <div className="mb-4">
-              <label className="block text-gray-300 text-sm mb-1">
-                Nombre de usuario <span className="text-red-400">*</span>
-              </label>
-              {/* 
-                name="username" → debe coincidir con la clave en formData
-                value={formData.username} → muestra el valor actual
-                onChange={handleChange} → llama a handleChange al escribir
-              */}
-              <input
-                type="text"
-                name="username"
-                value={formData.username}
-                onChange={handleChange}
-                placeholder="Ej: juanvolcano"
-                className="w-full bg-gray-800 border border-gray-600 text-white rounded-lg px-4 py-3 text-sm placeholder-gray-500 focus:outline-none focus:border-orange-500 transition-colors"
-              />
-            </div>
-
-            {/* -- Campo: Contraseña -- */}
-            <div className="mb-4">
-              <label className="block text-gray-300 text-sm mb-1">
-                Contraseña <span className="text-red-400">*</span>
-              </label>
-              <input
-                type="password"
-                name="password"
-                value={formData.password}
-                onChange={handleChange}
-                placeholder="Mínimo 6 caracteres"
-                className="w-full bg-gray-800 border border-gray-600 text-white rounded-lg px-4 py-3 text-sm placeholder-gray-500 focus:outline-none focus:border-orange-500 transition-colors"
-              />
-            </div>
-
-            {/* -- Campo: Confirmar Contraseña -- */}
-            {/* Este campo NO se envía al API, solo sirve para validar */}
-            <div>
-              <label className="block text-gray-300 text-sm mb-1">
-                Confirmar contraseña <span className="text-red-400">*</span>
-              </label>
-              <input
-                type="password"
-                name="confirmPassword"
-                value={formData.confirmPassword}
-                onChange={handleChange}
-                placeholder="Repite tu contraseña"
-                className="w-full bg-gray-800 border border-gray-600 text-white rounded-lg px-4 py-3 text-sm placeholder-gray-500 focus:outline-none focus:border-orange-500 transition-colors"
-              />
-            </div>
-          </div>
-
-
-          {/* Línea separadora visual entre secciones */}
-          <div className="border-t border-gray-700"></div>
-
-
-          {/* ==================================================== */}
-          {/* SECCIÓN: Datos del perfil (entidad UserProfile)        */}
-          {/* ==================================================== */}
-          <div>
-            <h2 className="text-orange-400 text-xs font-semibold uppercase tracking-widest mb-3">
-              Datos del perfil
-            </h2>
-
-            {/* -- Fila: Nombre y Apellido (dos columnas en desktop) -- */}
-            {/* grid grid-cols-2 → dos columnas iguales */}
-            {/* gap-4 → espacio entre las columnas */}
-            <div className="grid grid-cols-2 gap-4 mb-4">
-              {/* -- Campo: Nombre -- */}
-              <div>
-                <label className="block text-gray-300 text-sm mb-1">
-                  Nombre <span className="text-red-400">*</span>
-                </label>
-                <input
-                  type="text"
-                  name="firstName"
-                  value={formData.firstName}
-                  onChange={handleChange}
-                  placeholder="Ej: Juan"
-                  className="w-full bg-gray-800 border border-gray-600 text-white rounded-lg px-4 py-3 text-sm placeholder-gray-500 focus:outline-none focus:border-orange-500 transition-colors"
-                />
-              </div>
-
-              {/* -- Campo: Apellido -- */}
-              <div>
-                <label className="block text-gray-300 text-sm mb-1">
-                  Apellido <span className="text-red-400">*</span>
-                </label>
-                <input
-                  type="text"
-                  name="lastName"
-                  value={formData.lastName}
-                  onChange={handleChange}
-                  placeholder="Ej: Pérez"
-                  className="w-full bg-gray-800 border border-gray-600 text-white rounded-lg px-4 py-3 text-sm placeholder-gray-500 focus:outline-none focus:border-orange-500 transition-colors"
-                />
-              </div>
-            </div>
-
-            {/* -- Campo: Email -- */}
-            <div className="mb-4">
-              <label className="block text-gray-300 text-sm mb-1">
-                Correo electrónico <span className="text-red-400">*</span>
-              </label>
-              <input
-                type="email"
-                name="email"
-                value={formData.email}
-                onChange={handleChange}
-                placeholder="Ej: juan@correo.com"
-                className="w-full bg-gray-800 border border-gray-600 text-white rounded-lg px-4 py-3 text-sm placeholder-gray-500 focus:outline-none focus:border-orange-500 transition-colors"
-              />
-            </div>
-
-            {/* -- Campo: Teléfono (OPCIONAL) -- */}
-            {/* La etiqueta NO tiene el asterisco rojo porque es opcional */}
-            <div className="mb-4">
-              <label className="block text-gray-300 text-sm mb-1">
-                Teléfono{" "}
-                <span className="text-gray-500 text-xs">(opcional)</span>
-              </label>
-              <input
-                type="tel"
-                name="phoneNumber"
-                value={formData.phoneNumber}
-                onChange={handleChange}
-                placeholder="Ej: +57 300 123 4567"
-                className="w-full bg-gray-800 border border-gray-600 text-white rounded-lg px-4 py-3 text-sm placeholder-gray-500 focus:outline-none focus:border-orange-500 transition-colors"
-              />
-            </div>
-
-            {/* -- Campo: Fecha de nacimiento (OPCIONAL) -- */}
-            <div className="mb-4">
-              <label className="block text-gray-300 text-sm mb-1">
-                Fecha de nacimiento{" "}
-                <span className="text-gray-500 text-xs">(opcional)</span>
-              </label>
-              {/* type="date" → muestra el selector de fecha del navegador */}
-              <input
-                type="date"
-                name="birthDate"
-                value={formData.birthDate}
-                onChange={handleChange}
-                className="w-full bg-gray-800 border border-gray-600 text-white rounded-lg px-4 py-3 text-sm placeholder-gray-500 focus:outline-none focus:border-orange-500 transition-colors"
-              />
-            </div>
-
-            {/* -- Campo: URL foto de perfil (OPCIONAL) -- */}
-            <div className="mb-4">
-              <label className="block text-gray-300 text-sm mb-1">
-                URL foto de perfil{" "}
-                <span className="text-gray-500 text-xs">(opcional)</span>
-              </label>
-              <input
-                type="url"
-                name="profilePictureUrl"
-                value={formData.profilePictureUrl}
-                onChange={handleChange}
-                placeholder="https://... (link de tu foto)"
-                className="w-full bg-gray-800 border border-gray-600 text-white rounded-lg px-4 py-3 text-sm placeholder-gray-500 focus:outline-none focus:border-orange-500 transition-colors"
-              />
-            </div>
-
-            {/* -- Campo: Bio (OPCIONAL) -- */}
-            {/* textarea → cuadro de texto multi-línea */}
-            <div>
-              <label className="block text-gray-300 text-sm mb-1">
-                ¿A qué te dedicas?{" "}
-                <span className="text-gray-500 text-xs">(opcional)</span>
-              </label>
-              <textarea
-                name="bio"
-                value={formData.bio}
-                onChange={handleChange}
-                placeholder="Cuéntanos un poco sobre ti..."
-                rows={3}
-                className="w-full bg-gray-800 border border-gray-600 text-white rounded-lg px-4 py-3 text-sm placeholder-gray-500 focus:outline-none focus:border-orange-500 transition-colors resize-none"
-              />
-            </div>
-          </div>
-
-
-          {/* ---- BOTÓN DE ENVÍO ---- */}
-          {/*
-            disabled={loading} → desactiva el botón mientras carga
-            para evitar que el usuario haga clic múltiples veces
-          */}
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full bg-orange-600 hover:bg-orange-500 disabled:bg-gray-600 disabled:cursor-not-allowed text-white font-semibold py-3 rounded-lg transition-colors text-sm mt-2"
+        {/* ── Foto de perfil — centrada y visible antes del formulario ── */}
+        <div className="flex flex-col items-center mb-6">
+          {/* Círculo de avatar / vista previa */}
+          <div
+            onClick={() => fileRef.current?.click()}
+            className="relative w-24 h-24 rounded-full border-2 border-[#D3ABB0] 
+                       bg-[#FDE4BC] flex items-center justify-center 
+                       cursor-pointer overflow-hidden group
+                       hover:border-[#96786F] transition-colors duration-200"
+            title="Haz clic para seleccionar una foto"
           >
-            {/* Mostramos texto diferente según si está cargando o no */}
-            {loading ? "Registrando... ⏳" : "Crear cuenta 🌋"}
-          </button>
+            {preview ? (
+              // Vista previa de la imagen elegida
+              <img
+                src={preview}
+                alt="Vista previa"
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              // Placeholder cuando no hay imagen
+              <span className="text-4xl select-none">👤</span>
+            )}
 
+            {/* Overlay al hacer hover */}
+            <div className="absolute inset-0 bg-[#472825] bg-opacity-0 group-hover:bg-opacity-30 
+                            flex items-center justify-center transition-all duration-200">
+              <span className="text-white text-xs font-bold opacity-0 group-hover:opacity-100 text-center px-1">
+                📷 Cambiar
+              </span>
+            </div>
+          </div>
 
-          {/* ---- PIE DEL FORMULARIO ---- */}
-          {/* Texto con enlace para ir al login si ya tiene cuenta */}
-          <p className="text-center text-gray-400 text-sm mt-4">
-            ¿Ya tienes una cuenta?{" "}
-            {/* Link → navega a /Login sin recargar la página */}
-            <Link
-              to="/Login"
-              className="text-orange-400 hover:text-orange-300 font-semibold transition-colors"
+          {/* Input oculto — se activa al hacer clic en el círculo */}
+          <input
+            ref={fileRef}
+            type="file"
+            accept="image/*"
+            onChange={handleImageChange}
+            className="hidden"
+          />
+
+          {/* Texto de ayuda o botón para quitar */}
+          {preview ? (
+            <button
+              type="button"
+              onClick={handleRemoveImage}
+              className="mt-2 text-xs text-[#96786F] hover:text-[#472825] 
+                         font-semibold transition-colors duration-200 underline"
             >
-              Inicia sesión aquí
-            </Link>
-          </p>
-
-          {/* ---- TEXTO LEGAL ---- */}
-          <div className="border-t border-gray-700 pt-4">
-            <p className="text-center text-gray-500 text-xs">
-              Al registrarte en Vulcano, aceptas nuestros{" "}
-              <a href="#" className="text-orange-400 hover:underline">
-                Términos
-              </a>{" "}
-              y{" "}
-              <a href="#" className="text-orange-400 hover:underline">
-                Política de privacidad
-              </a>
-              .
+              Quitar foto
+            </button>
+          ) : (
+            <p className="mt-2 text-xs text-[#96786F] text-center">
+              Haz clic para subir tu foto{" "}
+              <span className="font-normal">(opcional · máx. 2 MB)</span>
             </p>
+          )}
+        </div>
+
+        {/* ── Formulario ── */}
+        <form onSubmit={handleSubmit}>
+
+          {/* ══ GRID 2 columnas en desktop, 1 en móvil ══ */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-0">
+
+            {/* ─── COLUMNA IZQUIERDA: Datos de acceso ─── */}
+            <div>
+              <p className="text-xs font-bold uppercase tracking-widest text-[#96786F] mb-3 pb-2 border-b border-[#D3ABB0]">
+                Datos de acceso
+              </p>
+
+              <div className="mb-3">
+                <label className={labelClass}>
+                  Nombre de usuario <span className="text-[#96786F]">*</span>
+                </label>
+                <input type="text" name="username" value={formData.username}
+                  onChange={handleChange} placeholder="Ej: mario_munera" className={inputClass} />
+              </div>
+
+              <div className="mb-3">
+                <label className={labelClass}>
+                  Contraseña <span className="text-[#96786F]">*</span>
+                </label>
+                <input type="password" name="password" value={formData.password}
+                  onChange={handleChange} placeholder="Mínimo 6 caracteres" className={inputClass} />
+              </div>
+
+              <div className="mb-3">
+                <label className={labelClass}>
+                  Confirmar contraseña <span className="text-[#96786F]">*</span>
+                </label>
+                <input type="password" name="confirmPassword" value={formData.confirmPassword}
+                  onChange={handleChange} placeholder="Repite tu contraseña" className={inputClass} />
+              </div>
+
+              <div className="mb-3">
+                <label className={labelClass}>
+                  Teléfono <span className="text-[#96786F] font-normal">(opcional)</span>
+                </label>
+                <input type="tel" name="phoneNumber" value={formData.phoneNumber}
+                  onChange={handleChange} placeholder="Ej: +57 300 123 4567" className={inputClass} />
+              </div>
+
+              <div className="mb-3">
+                <label className={labelClass}>
+                  Fecha de nacimiento <span className="text-[#96786F] font-normal">(opcional)</span>
+                </label>
+                <input type="date" name="birthDate" value={formData.birthDate}
+                  onChange={handleChange} className={inputClass} />
+              </div>
+            </div>
+
+            {/* ─── COLUMNA DERECHA: Datos del perfil ─── */}
+            <div>
+              <p className="text-xs font-bold uppercase tracking-widest text-[#96786F] mb-3 pb-2 border-b border-[#D3ABB0]">
+                Datos del perfil
+              </p>
+
+              <div className="grid grid-cols-2 gap-3 mb-3">
+                <div>
+                  <label className={labelClass}>
+                    Nombre <span className="text-[#96786F]">*</span>
+                  </label>
+                  <input type="text" name="firstName" value={formData.firstName}
+                    onChange={handleChange} placeholder="Ej: Mario" className={inputClass} />
+                </div>
+                <div>
+                  <label className={labelClass}>
+                    Apellido <span className="text-[#96786F]">*</span>
+                  </label>
+                  <input type="text" name="lastName" value={formData.lastName}
+                    onChange={handleChange} placeholder="Ej: Munera" className={inputClass} />
+                </div>
+              </div>
+
+              <div className="mb-3">
+                <label className={labelClass}>
+                  Correo electrónico <span className="text-[#96786F]">*</span>
+                </label>
+                <input type="email" name="email" value={formData.email}
+                  onChange={handleChange} placeholder="Ej: mario@correo.com" className={inputClass} />
+              </div>
+
+              <div className="mb-3">
+                <label className={labelClass}>
+                  ¿A qué te dedicas? <span className="text-[#96786F] font-normal">(opcional)</span>
+                </label>
+                <textarea name="bio" value={formData.bio} onChange={handleChange}
+                  placeholder="Cuéntanos un poco sobre ti..." rows={5}
+                  className={`${inputClass} resize-none`} />
+              </div>
+            </div>
+          </div>
+
+          {/* ── Botón y pie ── */}
+          <div className="mt-5">
+            <button type="submit" disabled={loading}
+              className="w-full bg-[#472825] text-[#FFF4E2] py-3 rounded-lg font-bold text-base
+                         hover:bg-[#96786F] transition-colors duration-300
+                         active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed">
+              {loading ? "Registrando... ⏳" : "Crear cuenta 🌋"}
+            </button>
+
+            <p className="text-center text-[#96786F] text-sm mt-3">
+              ¿Ya tienes una cuenta?{" "}
+              <Link to="/Login"
+                className="text-[#472825] font-bold hover:text-[#96786F] transition-colors duration-200">
+                Inicia sesión aquí
+              </Link>
+            </p>
+
+            <div className="border-t border-[#D3ABB0] mt-4 pt-3">
+              <p className="text-center text-[#96786F] text-xs">
+                Al registrarte en Vulcano, aceptas nuestros{" "}
+                <a href="#" className="text-[#472825] font-semibold hover:underline">Términos</a>{" "}
+                y{" "}
+                <a href="#" className="text-[#472825] font-semibold hover:underline">Política de privacidad</a>.
+              </p>
+            </div>
           </div>
 
         </form>

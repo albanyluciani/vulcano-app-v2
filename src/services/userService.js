@@ -18,7 +18,8 @@
 // Si algún día cambia el puerto o el dominio, solo lo
 // cambiamos en esta línea y todo lo demás sigue funcionando.
 // ----------------------------------------------------------
-const API_BASE_URL = "http://localhost:8080/api";
+// URL relativa: Vite intercepta /api/* y lo redirige a localhost:8080 (sin CORS)
+const API_BASE_URL = "/api";
 
 
 // ----------------------------------------------------------
@@ -65,12 +66,13 @@ export const registerUser = async (formData) => {
       firstName: formData.firstName,
       lastName: formData.lastName,
       email: formData.email,
-      // Si el usuario no llenó los campos opcionales, enviamos
-      // null para que el backend los ignore correctamente.
-      phoneNumber: formData.phoneNumber || null,
       bio: formData.bio || null,
-      profilePictureUrl: formData.profilePictureUrl || null,
       birthDate: formData.birthDate || null,
+      phoneNumber: formData.phoneNumber || null,
+      // URL de la foto: se recibe como string Base64 desde el frontend
+      profilePictureUrl: formData.profilePictureUrl || null,
+      // status es requerido por el backend (ACTIVE por defecto para nuevos usuarios)
+      status: "ACTIVE",
     },
   };
 
@@ -118,5 +120,68 @@ export const registerUser = async (formData) => {
   // de texto JSON a un objeto JavaScript normal.
   // --------------------------------------------------------
   const data = await response.json();
+  return data;
+};
+
+
+// ----------------------------------------------------------
+// FUNCIÓN: loginUser
+// ----------------------------------------------------------
+// Esta función recibe el username y password del formulario
+// y los envía al API para verificar si el usuario existe.
+//
+// PARÁMETROS:
+//   username → el nombre de usuario que escribió el usuario
+//   password → la contraseña que escribió el usuario
+//
+// RETORNA:
+//   La respuesta del servidor si el login fue correcto
+//   O lanza un error si el usuario/contraseña son incorrectos
+// ----------------------------------------------------------
+export const loginUser = async (username, password) => {
+
+  // --------------------------------------------------------
+  // PASO 1: Construir el payload
+  // --------------------------------------------------------
+  // El payload es el objeto que le enviamos al backend.
+  // El backend espera exactamente: { username, password }
+  // --------------------------------------------------------
+  const payload = {
+    username: username,
+    password: password,
+  };
+
+  // --------------------------------------------------------
+  // PASO 2: Hacer la petición POST al endpoint de login
+  // --------------------------------------------------------
+  const response = await fetch(`${API_BASE_URL}/auth/login`, {
+    method: "POST",          // POST = estamos enviando datos
+    headers: {
+      // Le decimos al servidor que enviamos datos en formato JSON
+      "Content-Type": "application/json",
+    },
+    // Convertimos el objeto JS a texto JSON para enviarlo
+    body: JSON.stringify(payload),
+  });
+
+  // --------------------------------------------------------
+  // PASO 3: Revisar si el servidor respondió con error
+  // --------------------------------------------------------
+  // response.ok es true si el status es 200-299
+  // Si el login falla (usuario/contraseña incorrectos),
+  // el servidor responde con 401 y response.ok será false
+  // --------------------------------------------------------
+  if (!response.ok) {
+    throw new Error("Usuario o contraseña incorrectos");
+  }
+
+  // --------------------------------------------------------
+  // PASO 4: Devolver la respuesta exitosa
+  // --------------------------------------------------------
+  // Si el backend devuelve JSON (ej: token o datos del usuario),
+  // lo convertimos a objeto JS. Si no devuelve nada, usamos {}.
+  // --------------------------------------------------------
+  const text = await response.text();
+  const data = text ? JSON.parse(text) : {};
   return data;
 };
