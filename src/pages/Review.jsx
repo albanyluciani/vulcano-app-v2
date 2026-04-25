@@ -1,8 +1,23 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import NavbarPpal from '../components/NavbarPpal';
 import VulcanoFooter from '../components/VulcanoFooter';
+import EditProfileModal from '../components/EditProfileModal';
+import '../styles/Layout.css';
 
 const Review = () => {
+  const navigate = useNavigate();
+
+  const userRaw = localStorage.getItem('user');
+  const user = userRaw ? JSON.parse(userRaw) : null;
+
+  const firstName = user?.profile?.firstName || 'Usuario';
+  const lastName = user?.profile?.lastName || '';
+  const username = user?.username || '';
+  const profilePic = user?.profile?.profilePictureUrl || null;
+
+  const [showEditModal, setShowEditModal] = useState(false);
+
   // ========== ESTADOS (States) ==========
   // Almacena el nombre del usuario que escribe la review
   const [usuario, setUsuario] = useState("");
@@ -60,13 +75,78 @@ const Review = () => {
     setReviews(nuevas);
   };
 
+  const handleLogout = () => {
+    localStorage.removeItem('user');
+    navigate('/Login');
+  };
+
+  const handleProfileUpdated = (updatedUser) => {
+    localStorage.setItem('user', JSON.stringify(updatedUser));
+    setShowEditModal(false);
+    window.location.reload();
+  };
+
   return (
-    <div className="flex flex-col min-h-screen bg-[#FFF4E2]">
-      {/* Barra de navegación superior */}
-      <NavbarPpal />
-      
-      {/* Contenedor principal */}
-      <div className="flex-1 max-w-4xl mx-auto py-12 px-4 w-full">
+    <div className="layout-container">
+      <aside className="layout-sidebar">
+        <div className="sidebar-profile">
+          {profilePic ? (
+            <img
+              src={profilePic}
+              alt={`Foto de perfil de ${firstName}`}
+              className="sidebar-avatar"
+            />
+          ) : (
+            <div className="sidebar-avatar-placeholder">👤</div>
+          )}
+
+          <p className="sidebar-name">{firstName} {lastName}</p>
+          <p className="sidebar-username">@{username}</p>
+        </div>
+
+        <nav className="sidebar-nav">
+          <button
+            className="sidebar-nav-btn"
+            onClick={() => navigate('/Course')}
+          >
+            <span className="btn-icon">📚</span>
+            Cursos
+          </button>
+
+          <button
+            className="sidebar-nav-btn active"
+            onClick={() => navigate('/Review')}
+          >
+            <span className="btn-icon">📝</span>
+            Reviews
+          </button>
+        </nav>
+
+        <div className="sidebar-footer">
+          <button
+            className="sidebar-footer-btn"
+            onClick={() => setShowEditModal(true)}
+          >
+            <span>✏️</span>
+            Modificar Perfil
+          </button>
+
+          <button
+            className="sidebar-footer-btn danger"
+            onClick={handleLogout}
+          >
+            <span>🚪</span>
+            Cerrar sesión
+          </button>
+        </div>
+      </aside>
+
+      <div className="flex-1 overflow-y-auto bg-[#FFF4E2] flex flex-col">
+        {/* Barra de navegación superior */}
+        <NavbarPpal />
+
+        {/* Contenedor principal */}
+        <div className="flex-1 max-w-4xl mx-auto py-12 px-4 w-full">
         {/* Título principal de la página */}
         <h1 className="text-4xl font-bold text-center text-[#472825] mb-12">
           📝 Comparte tu Experiencia
@@ -160,7 +240,7 @@ const Review = () => {
           </button>
         </form>
 
-        {/* ========== SECCIÓN DE VISUALIZACIÓN DE REVIEWS ========== */}
+        {/* ========== SECCIÓN DE VISUALIZACIÓN DE REVIEWS ======si==== */}
         <div>
           {/* Condicional: Si hay reviews, mostrar la lista; si no, mostrar mensaje */}
           {reviews.length > 0 ? (
@@ -211,10 +291,19 @@ const Review = () => {
             </div>
           )}
         </div>
+        </div>
+
+        {/* Footer de la página */}
+        <VulcanoFooter />
       </div>
 
-      {/* Footer de la página */}
-      <VulcanoFooter />
+      {showEditModal && user && (
+        <EditProfileModal
+          user={user}
+          onClose={() => setShowEditModal(false)}
+          onSaved={handleProfileUpdated}
+        />
+      )}
     </div>
   );
 };
