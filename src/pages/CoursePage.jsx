@@ -11,8 +11,8 @@
  * 4. Orquestar los Modales de Confirmación, Formularios y Notificaciones flotantes.
  */
 import { useState, useEffect } from 'react';
-import NavbarPpal from '../components/NavbarPpal';
-import VulcanoFooter from '../components/VulcanoFooter';
+import Swal from 'sweetalert2';
+
 import '../styles/Course.css';
 import { getCourses, createCourse, updateCourse, deleteCourse } from "../services/courseService";
 import Modal from '../components/Modal';
@@ -48,17 +48,24 @@ const CoursePage = () => {
   const [editing, setEditing] = useState(null);
   const [saving, setSaving] = useState(false);
 
-  // New States
   const [viewMode, setViewMode] = useState('grid');
   const [pendingDelete, setPendingDelete] = useState(null);
   const [courseToDelete, setCourseToDelete] = useState(null);
-  const [toast, setToast] = useState(null);
   const [undoSeconds, setUndoSeconds] = useState(0);
   const [deleteConfirmText, setDeleteConfirmText] = useState('');
 
-  const showToast = (msg) => {
-    setToast(msg);
-    setTimeout(() => setToast(null), 3000);
+  const showToast = (msg, icon = 'success') => {
+    Swal.fire({
+      text: msg,
+      icon: icon,
+      toast: true,
+      position: 'bottom-end',
+      showConfirmButton: false,
+      timer: 3000,
+      timerProgressBar: true,
+      background: "#fff4e2",
+      color: "#472825"
+    });
   };
 
   const updateFilter = (setter, value) => {
@@ -180,9 +187,7 @@ const CoursePage = () => {
     .sort((a, b) => a.id - b.id);
 
   return (
-    <div className="vh-container">
-      <NavbarPpal />
-
+    <div className="w-full">
       <main className="flex-1 max-w-4xl w-full mx-auto px-5 py-10">
 
         {/* Encabezado */}
@@ -386,19 +391,16 @@ const CoursePage = () => {
 
 
 
-      {/* Notificación Toast */}
-      {(toast || pendingDelete) && (
+      {/* Notificación Toast (solo para eliminación pendiente, o dejar que Swal maneje todo) */}
+      {pendingDelete && (
         <div className="fixed bottom-6 right-6 bg-slate-800 text-white px-5 py-4 rounded-xl shadow-[0_10px_40px_rgba(0,0,0,0.3)] z-50 flex items-center font-medium border border-slate-700 animate-[cp-fadeup_0.3s_ease]">
-          {toast || `🗑️ Se eliminará el curso en ${undoSeconds}s.`}
-          {pendingDelete && (
-            <button className="cp-undo-btn" onClick={undoDelete}>
-              Deshacer
-            </button>
-          )}
+          {`🗑️ Se eliminará el curso en ${undoSeconds}s.`}
+          <button className="cp-undo-btn" onClick={undoDelete}>
+            Deshacer
+          </button>
         </div>
       )}
 
-      <VulcanoFooter />
     </div>
   );
 };

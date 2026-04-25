@@ -10,8 +10,13 @@ export default defineConfig({
       // Toda petición que empiece con /api será redirigida al backend
       '/api': {
         target: 'http://localhost:8080',
-        changeOrigin: true,   // cambia el header Origin para que el backend lo acepte
-        secure: false,        // permite HTTP sin certificado SSL
+        changeOrigin: true,
+        secure: false,
+      },
+      '/uploads': {
+        target: 'http://localhost:8080',
+        changeOrigin: true,
+        secure: false,
       },
     },
   },

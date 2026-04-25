@@ -13,121 +13,129 @@
 // VulcanoRegister.jsx para no desentonar con el proyecto.
 // ============================================================
 
-import { useState, useRef } from "react";
-import { updateUser } from "../services/api";
+import { useState, useRef, useEffect } from "react";
+import { updateUser, uploadProfilePicture } from "../services/api";
 
 const EditProfileModal = ({ user, onClose, onSaved }) => {
-  // Referencia al input[type=file] oculto (para la foto)
   const fileRef = useRef(null);
 
   // ----------------------------------------------------------
-  // PASO 1: Inicializamos el formulario con los datos actuales
-  // ----------------------------------------------------------
-  // De esta forma el usuario ve su información actual y solo
-  // modifica lo que quiere cambiar.
+  // PASO 1: Estado para los datos del formulario (Textos)
   // ----------------------------------------------------------
   const [formData, setFormData] = useState({
-    firstName:         user.profile?.firstName         || "",
-    lastName:          user.profile?.lastName          || "",
-    email:             user.profile?.email             || "",
-    phoneNumber:       user.profile?.phoneNumber       || "",
-    bio:               user.profile?.bio               || "",
-    profilePictureUrl: user.profile?.profilePictureUrl || "",
+    firstName:   user.profile?.firstName   || "",
+    lastName:    user.profile?.lastName    || "",
+    email:       user.profile?.email       || "",
+    phoneNumber: user.profile?.phoneNumber || "",
+    bio:         user.profile?.bio         || "",
   });
 
-  // Vista previa de la foto (URL local o Base64 que ya tenía)
+  // ----------------------------------------------------------
+  // PASO 2: Gestión de la Imagen (Visual y Archivo)
+  // ----------------------------------------------------------
+  // 'preview' maneja lo que el usuario ve EN EL MOMENTO.
+  // Puede ser la URL del servidor o la URL temporal del archivo seleccionado.
   const [preview, setPreview]   = useState(user.profile?.profilePictureUrl || null);
+  // 'selectedFile' guarda el archivo real para el momento del Guardar.
+  const [selectedFile, setSelectedFile] = useState(null);
+
   const [loading, setLoading]   = useState(false);
   const [error,   setError]     = useState(null);
 
-  // ----------------------------------------------------------
-  // handleChange: actualiza el estado cuando el usuario escribe
-  // ----------------------------------------------------------
+  // LIMPIEZA DE MEMORIA (Nivel Senior):
+  // Cuando creamos previsualizaciones con URL.createObjectURL, ocupan memoria.
+  // Es buena práctica liberarlas cuando el componente se cierra o la imagen cambia.
+  useEffect(() => {
+    return () => {
+      if (preview && preview.startsWith("blob:")) {
+        URL.revokeObjectURL(preview);
+      }
+    };
+  }, [preview]);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  // ----------------------------------------------------------
-  // handleImageChange: convierte la imagen a Base64
-  // ----------------------------------------------------------
-  // Es exactamente la misma lógica que en VulcanoRegister.jsx.
-  // FileReader lee el archivo local y lo convierte a un string
-  // "data:image/jpeg;base64,..." que podemos enviar al backend.
-  // ----------------------------------------------------------
+  /**
+   * handleImageChange: Genera efecto de "Tiempo Real"
+   */
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (!file) return;
 
+    // Validaciones rápidas
     if (!file.type.startsWith("image/")) {
-      setError("El archivo seleccionado no es una imagen válida.");
+      setError("Por favor, selecciona una imagen válida.");
       return;
     }
     if (file.size > 2 * 1024 * 1024) {
-      setError("La imagen no debe superar los 2 MB.");
+      setError("La imagen es muy pesada (máx 2MB).");
       return;
     }
 
     setError(null);
-    // Vista previa rápida usando URL de objeto local
-    setPreview(URL.createObjectURL(file));
+    setSelectedFile(file);
 
-    // Convertimos a Base64 para enviarlo al backend
-    const reader = new FileReader();
-    reader.onload = (ev) => {
-      setFormData((prev) => ({ ...prev, profilePictureUrl: ev.target.result }));
-    };
-    reader.readAsDataURL(file);
+    // ESTO ES LO QUE CREA EL EFECTO EN TIEMPO REAL:
+    // Generamos una URL temporal que solo existe en la memoria del navegador.
+    const tempUrl = URL.createObjectURL(file);
+    setPreview(tempUrl);
   };
 
-  // Quitar la foto seleccionada
+  // Quitar la foto seleccionada (vuelve a la original o ninguna)
   const handleRemoveImage = () => {
     setPreview(null);
-    setFormData((prev) => ({ ...prev, profilePictureUrl: "" }));
+    setSelectedFile(null);
     if (fileRef.current) fileRef.current.value = "";
   };
 
   // ----------------------------------------------------------
   // handleSubmit: envía los cambios al backend
   // ----------------------------------------------------------
+  // Haremos dos pasos: 
+  // 1. Actualizar los datos de texto (PUT /api/users/{id})
+  // 2. Si hay imagen nueva, subirla (POST /api/userProfiles/{id}/upload-image)
+  // ----------------------------------------------------------
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Validaciones básicas
-    if (!formData.firstName.trim()) { setError("El nombre es obligatorio.");           return; }
-    if (!formData.lastName.trim())  { setError("El apellido es obligatorio.");         return; }
-    if (!formData.email.trim())     { setError("El correo es obligatorio.");           return; }
-    if (!formData.email.includes("@")) { setError("El correo no tiene formato válido."); return; }
+    if (!formData.firstName.trim()) { setError("El nombre es obligatorio."); return; }
+    if (!formData.lastName.trim())  { setError("El apellido es obligatorio."); return; }
+    if (!formData.email.trim())     { setError("El correo es obligatorio."); return; }
 
     setError(null);
     setLoading(true);
 
     try {
-      // --------------------------------------------------------
-      // Construimos el payload que espera el backend.
-      // El endpoint PUT /api/users/{id} recibe un objeto User
-      // con su perfil anidado — igual que el POST de registro.
-      // --------------------------------------------------------
+      // 1. Actualizamos datos de texto
       const payload = {
         username: user.username,
-        password: user.password,    // lo requerimos para que la entidad sea válida
+        password: user.password,
         profile: {
-          ...user.profile,           // conservamos los campos que no vienen en el form
-          firstName:         formData.firstName,
-          lastName:          formData.lastName,
-          email:             formData.email,
-          phoneNumber:       formData.phoneNumber       || null,
-          bio:               formData.bio               || null,
-          profilePictureUrl: formData.profilePictureUrl || null,
-          status:            user.profile?.status       || "ACTIVE",
+          ...user.profile,
+          firstName: formData.firstName,
+          lastName:  formData.lastName,
+          email:     formData.email,
+          phoneNumber: formData.phoneNumber || null,
+          bio:       formData.bio || null,
         },
       };
 
-      // Llamamos a: PUT /api/users/{id}
-      const updatedUser = await updateUser(user.id, payload);
+      let finalUser = await updateUser(user.id, payload);
 
-      // Le avisamos al Layout que guardamos — el Layout actualizará localStorage
-      onSaved(updatedUser);
+      // 2. Si el usuario eligió una foto nueva, la subimos
+      if (selectedFile) {
+        // El endpoint requiere el ID del perfil
+        const profileId = finalUser.profile?.id;
+        const updatedProfile = await uploadProfilePicture(profileId, selectedFile);
+        // MERGE: Actualizamos el perfil dentro del objeto de usuario
+        finalUser = { ...finalUser, profile: updatedProfile };
+      }
+
+      // 3. Notificamos al Layout y cerramos
+      onSaved(finalUser);
 
     } catch (err) {
       setError(err.message || "Ocurrió un error al guardar los cambios.");

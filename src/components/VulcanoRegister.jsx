@@ -8,7 +8,8 @@
 
 import { useState, useRef } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { registerUser } from "../services/userService";
+import { registerUser } from "../services/api";
+import Swal from "sweetalert2";
 
 const VulcanoRegister = () => {
   const navigate  = useNavigate();
@@ -24,11 +25,12 @@ const VulcanoRegister = () => {
     phoneNumber:     "",
     bio:             "",
     birthDate:       "",
-    profilePictureUrl: "", // se llenará con Base64
   });
 
-  // Vista previa local (Object URL o Base64)
+  // Vista previa local (Object URL)
   const [preview, setPreview] = useState(null);
+  // Archivo real para subir al servidor
+  const [selectedFile, setSelectedFile] = useState(null);
 
   const [error,   setError]   = useState(null);
   const [loading, setLoading] = useState(false);
@@ -62,22 +64,13 @@ const VulcanoRegister = () => {
 
     // Generamos la vista previa rápida (URL de objeto local)
     setPreview(URL.createObjectURL(file));
-
-    // Convertimos a Base64 para enviar al backend
-    const reader = new FileReader();
-    reader.onload = (ev) => {
-      setFormData((prev) => ({
-        ...prev,
-        profilePictureUrl: ev.target.result, // string "data:image/jpeg;base64,..."
-      }));
-    };
-    reader.readAsDataURL(file);
+    setSelectedFile(file);
   };
 
   // Eliminar imagen seleccionada
   const handleRemoveImage = () => {
     setPreview(null);
-    setFormData((prev) => ({ ...prev, profilePictureUrl: "" }));
+    setSelectedFile(null);
     if (fileRef.current) fileRef.current.value = "";
   };
 
@@ -107,11 +100,27 @@ const VulcanoRegister = () => {
     if (errorMessage) { setError(errorMessage); return; }
     setLoading(true);
     try {
-      await registerUser(formData);
-      setSuccess(true);
-      setTimeout(() => navigate("/Login"), 2000);
+      await registerUser(formData, selectedFile);
+      Swal.fire({
+        title: "¡Éxito!",
+        text: "Tu cuenta ha sido creada exitosamente. Redirigiendo al login...",
+        icon: "success",
+        timer: 2000,
+        showConfirmButton: false,
+        confirmButtonColor: "#472825",
+        background: "#fff4e2",
+        color: "#472825"
+      });
+      setTimeout(() => navigate("/login"), 2000);
     } catch (err) {
-      setError(err.message || "Ocurrió un error inesperado. Intenta de nuevo.");
+      Swal.fire({
+        title: "Error al registrar",
+        text: err.message || "Ocurrió un error inesperado. Intenta de nuevo.",
+        icon: "error",
+        confirmButtonColor: "#472825",
+        background: "#fff4e2",
+        color: "#472825"
+      });
     } finally {
       setLoading(false);
     }
@@ -137,17 +146,7 @@ const VulcanoRegister = () => {
           <p className="text-[#96786F] text-sm mt-1">Únete a la comunidad Vulcano</p>
         </div>
 
-        {/* ── Alertas ── */}
-        {success && (
-          <div className="mb-4 p-3 rounded-lg border-2 border-[#D3ABB0] bg-[#FDE4BC] text-[#472825] text-sm text-center font-semibold">
-            ✅ ¡Cuenta creada exitosamente! Redirigiendo al login...
-          </div>
-        )}
-        {error && (
-          <div className="mb-4 p-3 rounded-lg border-2 border-[#D3ABB0] text-[#472825] text-sm text-center font-semibold">
-            ⚠️ {error}
-          </div>
-        )}
+
 
         {/* ── Foto de perfil — centrada y visible antes del formulario ── */}
         <div className="flex flex-col items-center mb-6">

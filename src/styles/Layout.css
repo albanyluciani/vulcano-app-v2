@@ -35,6 +35,40 @@
   box-shadow: 4px 0 24px rgba(71, 40, 37, 0.15);
   position: relative;
   z-index: 10;
+  transition: width 0.3s ease, min-width 0.3s ease;
+}
+
+/* ── ESTILOS DEL SIDEBAR CERRADO (MINIMIZADO) ─────────────── */
+.layout-sidebar.closed {
+  width: 88px;
+  min-width: 88px;
+}
+
+.layout-sidebar.closed .sidebar-name,
+.layout-sidebar.closed .sidebar-username,
+.layout-sidebar.closed .sidebar-text {
+  display: none;
+}
+
+.layout-sidebar.closed .sidebar-profile {
+  padding: 24px 0;
+}
+
+.layout-sidebar.closed .sidebar-avatar,
+.layout-sidebar.closed .sidebar-avatar-placeholder {
+  width: 48px;
+  height: 48px;
+  font-size: 24px;
+}
+
+.layout-sidebar.closed .sidebar-nav-btn,
+.layout-sidebar.closed .sidebar-footer-btn {
+  justify-content: center;
+  padding: 14px 0;
+}
+
+.layout-sidebar.closed .btn-icon {
+  margin: 0;
 }
 
 /* ── ZONA SUPERIOR: Foto y nombre del usuario ─────────────── */
@@ -88,14 +122,18 @@
   letter-spacing: 0.2px;
 }
 
-/* @username debajo del nombre */
-.sidebar-username {
-  color: var(--color-blush);
-  font-size: 12px;
-  font-weight: 600;
+/* Rol (ADMINISTRADOR / USUARIO) debajo del nombre */
+.sidebar-role {
+  color: var(--color-dark);
+  background-color: var(--color-cream);
+  font-size: 10px;
+  font-weight: 900;
   text-align: center;
-  opacity: 0.75;
-  margin: 0;
+  padding: 4px 12px;
+  border-radius: 20px;
+  margin-top: 8px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
 }
 
 /* ── ZONA MEDIA: Botones de navegación ───────────────────── */
@@ -184,6 +222,14 @@
 /* ================================================================
    ÁREA MAIN — Contenido de bienvenida
    ================================================================ */
+/* Área de contenido general para el Layout wrapper */
+.layout-content-area {
+  flex: 1;
+  overflow-y: auto;
+  background-color: var(--color-white);
+  height: 100vh;
+}
+
 .layout-main {
   flex: 1;                    /* Ocupa todo el ancho restante */
   overflow-y: auto;
@@ -193,6 +239,36 @@
   align-items: center;
   justify-content: center;
   padding: 40px 20px;
+  min-height: 100%;
+  position: relative;         /* Para poder posicionar el botón en absoluto */
+}
+
+/* ================================================================
+   BOTÓN PARA ABRIR/CERRAR EL SIDEBAR
+   ================================================================ */
+.sidebar-toggle-btn {
+  position: absolute;
+  top: 24px;
+  left: 24px;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: none;
+  background-color: var(--color-dark);
+  color: var(--color-cream);
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 100;
+  box-shadow: 0 4px 12px rgba(71, 40, 37, 0.2);
+  transition: background-color 0.2s, transform 0.2s;
+}
+
+.sidebar-toggle-btn:hover {
+  background-color: var(--color-mid);
+  transform: scale(1.05);
 }
 
 /* Emoji grande de bienvenida */

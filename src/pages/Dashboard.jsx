@@ -1,34 +1,69 @@
-// ============================================================
-// Dashboard.jsx
-// ------------------------------------------------------------
-// Esta es una página PLACEHOLDER (temporal/de relleno).
-// Un "placeholder" es algo que ponemos mientras construimos
-// la versión real. En este caso, el dashboard completo
-// aún no está construido, pero lo necesitamos para que
-// cuando el usuario se registre, tenga a dónde ir.
-// ============================================================
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import Layout from "./layout/Layout";
+import EditProfileModal from "../components/EditProfileModal";
 
 const Dashboard = () => {
+  const navigate = useNavigate();
+
+  // Recuperamos el usuario de localStorage
+  const [user, setUser] = useState(() => {
+    const userRaw = localStorage.getItem("user");
+    return userRaw ? JSON.parse(userRaw) : null;
+  });
+
+  const firstName = user?.profile?.firstName || "Usuario";
+  const [showEditModal, setShowEditModal] = useState(false);
+
+  const handleProfileUpdated = (updatedUser) => {
+    setUser(updatedUser);
+    localStorage.setItem("user", JSON.stringify(updatedUser));
+    setShowEditModal(false);
+  };
+
   return (
-    // Contenedor principal que ocupa toda la pantalla
-    // bg-gray-900 = fondo gris muy oscuro (igual que el login)
-    // text-white = texto blanco
-    // flex flex-col items-center justify-center = centra el contenido
-    <div className="min-h-screen bg-gray-900 text-white flex flex-col items-center justify-center">
+    <Layout>
+      <div className="layout-main">
+        <div className="layout-welcome-icon">🌋</div>
+        <h1 className="layout-welcome-title">¡Bienvenido, {firstName}!</h1>
+        <p className="layout-welcome-subtitle">
+          Estás dentro del sistema Vulcano. Selecciona una opción del menú
+          lateral para comenzar.
+        </p>
 
-      {/* Icono decorativo (un emoji de volcán para mantener el tema) */}
-      <div className="text-8xl mb-6">🌋</div>
+        <div className="layout-action-cards">
+          <div
+            className="layout-action-card"
+            onClick={() => navigate("/layout/Course")}
+            role="button"
+            tabIndex={0}
+            onKeyDown={(e) => e.key === "Enter" && navigate("/layout/Course")}
+          >
+            <span className="layout-action-card-icon">📚</span>
+            <span className="layout-action-card-title">Cursos</span>
+          </div>
 
-      {/* Título principal */}
-      <h1 className="text-4xl font-bold text-orange-400 mb-4">
-        ¡Bienvenido al Dashboard!
-      </h1>
+          <div
+            className="layout-action-card"
+            onClick={() => setShowEditModal(true)}
+            role="button"
+            tabIndex={0}
+            onKeyDown={(e) => e.key === "Enter" && setShowEditModal(true)}
+          >
+            <span className="layout-action-card-icon">✏️</span>
+            <span className="layout-action-card-title">Mi Perfil</span>
+          </div>
+        </div>
+      </div>
 
-      {/* Mensaje de que esta sección está en construcción */}
-      <p className="text-gray-400 text-lg">
-        Esta sección está en construcción. Vuelve pronto 🔧
-      </p>
-    </div>
+      {showEditModal && user && (
+        <EditProfileModal
+          user={user}
+          onClose={() => setShowEditModal(false)}
+          onSaved={handleProfileUpdated}
+        />
+      )}
+    </Layout>
   );
 };
 

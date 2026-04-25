@@ -469,6 +469,30 @@
   box-shadow: 0 0 0 3px rgba(211, 171, 176, 0.3);
 }
 
+/* Estilos premium para inputs de fecha y hora */
+.cp-input[type="date"],
+.cp-input[type="time"] {
+  min-height: 52px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
+/* Color de los iconos internos para que combinen con la paleta de colores café/crema */
+::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+  filter: sepia(100%) saturate(500%) hue-rotate(340deg) brightness(80%) contrast(140%); 
+  padding: 5px;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+::-webkit-calendar-picker-indicator:hover {
+  background: var(--color-blush);
+  transform: scale(1.1);
+}
+
 .cp-textarea {
   resize: vertical;
   min-height: 80px;

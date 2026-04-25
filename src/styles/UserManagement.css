@@ -1,0 +1,181 @@
+/* ============================================================
+   UserManagement.css
+   ------------------------------------------------------------
+   Estilos específicos para la gestión de usuarios (Admin).
+   ============================================================ */
+
+.userman-container {
+  padding: 40px;
+  max-width: 1000px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.userman-header {
+  margin-bottom: 30px;
+}
+
+.userman-title {
+  font-size: 28px;
+  font-weight: 900;
+  color: var(--color-dark);
+  margin-bottom: 8px;
+}
+
+.userman-subtitle {
+  color: var(--color-mid);
+  font-size: 15px;
+}
+
+/* ── Estilos de la Tabla ── */
+.userman-table-wrapper {
+  background: white;
+  border-radius: 20px;
+  border: 2px solid var(--color-blush);
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(71, 40, 37, 0.05);
+}
+
+.userman-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.userman-table th {
+  background-color: var(--color-white);
+  padding: 18px 24px;
+  color: var(--color-dark);
+  font-weight: 800;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  border-bottom: 2px solid var(--color-blush);
+}
+
+.userman-table td {
+  padding: 16px 24px;
+  border-bottom: 1px solid rgba(211, 171, 176, 0.2);
+  color: var(--color-dark);
+  font-size: 14px;
+  vertical-align: middle;
+}
+
+.userman-table tr:last-child td {
+  border-bottom: none;
+}
+
+.userman-table tr:hover td {
+  background-color: rgba(253, 228, 188, 0.1);
+}
+
+/* ── Celda de Usuario ── */
+.user-info-cell {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.user-avatar-mini {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--color-blush);
+}
+
+.user-details {
+  display: flex;
+  flex-direction: column;
+}
+
+.user-full-name {
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.user-username {
+  font-size: 12px;
+  color: var(--color-mid);
+}
+
+/* ── Badges de Rol ── */
+.role-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 10px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.role-badge.admin {
+  background-color: #E8F5E9;
+  color: #2E7D32;
+  border: 1px solid #A5D6A7;
+}
+
+.role-badge.user {
+  background-color: #F3F4F6;
+  color: #374151;
+  border: 1px solid #D1D5DB;
+}
+
+/* ── Botones de Acción ── */
+.btn-change-role {
+  padding: 8px 16px;
+  border: 2px solid var(--color-blush);
+  border-radius: 12px;
+  background: white;
+  color: var(--color-dark);
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-change-role:hover:not(:disabled) {
+  background-color: var(--color-dark);
+  color: var(--color-white);
+  border-color: var(--color-dark);
+}
+
+.btn-change-role.is-admin {
+  color: #DC2626; /* Rojo para indicar "quitar admin" */
+  border-color: #FECACA;
+}
+
+.btn-change-role.is-admin:hover:not(:disabled) {
+  background-color: #DC2626;
+  color: white;
+  border-color: #DC2626;
+}
+
+.btn-change-role:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 100px;
+  color: var(--color-mid);
+  gap: 16px;
+}
+
+.loading-spinner {
+  font-size: 40px;
+  animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}

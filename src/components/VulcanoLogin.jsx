@@ -13,6 +13,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { loginUser } from "../services/api"; // función que llama a POST /api/auth/login
+import Swal from "sweetalert2";
 
 const VulcanoLogin = () => {
   const navigate = useNavigate();
@@ -47,7 +48,14 @@ const VulcanoLogin = () => {
       navigate("/layout");
     } catch (err) {
       // El mensaje de error viene directo del backend
-      setError(err.message);
+      Swal.fire({
+        title: "Error de acceso",
+        text: err.message,
+        icon: "error",
+        confirmButtonColor: "#472825",
+        background: "#fff4e2",
+        color: "#472825"
+      });
     } finally {
       setLoading(false);
     }
@@ -91,12 +99,7 @@ const VulcanoLogin = () => {
           </div>
         </div>
 
-        {/* Mostramos el error solo si la variable "error" tiene texto */}
-        {error && (
-          <p style={{ color: "red", marginBottom: "8px", fontSize: "14px" }}>
-            ⚠️ {error}
-          </p>
-        )}
+
 
         {/* onClick: llamamos a handleLogin cuando el usuario hace clic */}
         {/* disabled: bloqueamos el botón mientras carga para evitar doble clic */}
@@ -142,7 +145,7 @@ const VulcanoLogin = () => {
 
         <div className="login-footer-text" style={{ marginTop: "16px" }}>
           ¿No tienes cuenta?{" "}
-          <Link to="/Register" style={{ color: "#D3ABB0", fontWeight: 800, textDecoration: "none" }}>
+          <Link to="/register" style={{ color: "#D3ABB0", fontWeight: 800, textDecoration: "none" }}>
             Regístrate aquí
           </Link>
         </div>

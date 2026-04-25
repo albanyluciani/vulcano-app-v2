@@ -1,4 +1,6 @@
-const API = "http://localhost:8080/api/modules";
+// URL relativa: el proxy de Vite redirige /api/* a localhost:8080
+// Igual que courseService.js y scheduleService.js
+const API = "/api/modules";
 
 export const getModules = async () => {
   const res = await fetch(API);

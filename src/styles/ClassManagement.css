@@ -1,0 +1,414 @@
+/* ============================================================
+   ClassManagement.css
+   ------------------------------------------------------------
+   Premium styling for the class management admin interface.
+   Uses variables from index.css for consistency.
+   ============================================================ */
+
+.class-management-container {
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 40px 20px;
+  animation: fadeIn 0.5s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.management-header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.management-title {
+  font-size: 32px;
+  font-weight: 900;
+  color: var(--color-dark);
+  margin-bottom: 12px;
+}
+
+.management-subtitle {
+  color: var(--color-mid);
+  font-size: 16px;
+}
+
+/* ── BOTÓN CREAR CLASE ─────────────── */
+.btn-create-init {
+  display: block;
+  margin: 0 auto;
+  padding: 16px 32px;
+  background: var(--color-dark);
+  color: var(--color-cream);
+  border: none;
+  border-radius: 50px;
+  font-size: 18px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  box-shadow: 0 10px 20px rgba(71, 40, 37, 0.2);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.btn-create-init:hover {
+  transform: scale(1.05) translateY(-2px);
+  box-shadow: 0 15px 30px rgba(71, 40, 37, 0.3);
+  background: var(--color-mid);
+}
+
+/* ── FORM CARD (GLASSMORPHISM) ─────────────── */
+.class-form-card {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--color-blush);
+  border-radius: 24px;
+  padding: 40px;
+  box-shadow: 0 20px 40px rgba(71, 40, 37, 0.08);
+  margin-top: 30px;
+  animation: slideUp 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin-bottom: 30px;
+}
+
+@media (max-width: 768px) {
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.form-label {
+  font-weight: 800;
+  font-size: 14px;
+  color: var(--color-dark);
+  margin-left: 4px;
+}
+
+.form-input {
+  padding: 14px 18px;
+  border: 2px solid var(--color-blush);
+  border-radius: 12px;
+  background: rgba(255, 244, 226, 0.5);
+  color: var(--color-dark);
+  font-family: inherit;
+  font-size: 15px;
+  transition: all 0.2s;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: var(--color-dark);
+  background: #fff;
+  box-shadow: 0 0 0 4px rgba(71, 40, 37, 0.05);
+}
+
+.form-input:disabled {
+  background: #f0f0f0;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+/* ── SECCIÓN DE HORARIOS ─────────────── */
+.schedules-section {
+  margin-top: 20px;
+  border-top: 2px dashed var(--color-blush);
+  padding-top: 30px;
+}
+
+.section-title {
+  font-size: 18px;
+  font-weight: 900;
+  color: var(--color-dark);
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.add-date-btn {
+  padding: 10px 20px;
+  background: var(--color-cream);
+  color: var(--color-dark);
+  border: 2px solid var(--color-blush);
+  border-radius: 50px;
+  font-weight: 800;
+  cursor: pointer;
+  margin-bottom: 20px;
+  transition: all 0.2s;
+}
+
+.add-date-btn:hover {
+  background: var(--color-blush);
+  border-color: var(--color-mid);
+}
+
+/* ── LISTA DE FECHAS ─────────────── */
+.dates-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.date-item {
+  background: #fff;
+  border-radius: 16px;
+  padding: 20px;
+  border: 1px solid var(--color-blush);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  position: relative;
+}
+
+.date-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.date-input {
+  border: none;
+  font-weight: 800;
+  font-size: 16px;
+  color: var(--color-dark);
+}
+
+.remove-btn {
+  background: none;
+  border: none;
+  color: #ff6b6b;
+  cursor: pointer;
+  font-size: 18px;
+  transition: transform 0.2s;
+}
+
+.remove-btn:hover {
+  transform: scale(1.2);
+}
+
+/* ── HORAS DENTRO DE UNA FECHA ─────────────── */
+.hours-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+
+.hour-chip {
+  background: var(--color-white);
+  padding: 6px 14px;
+  border-radius: 50px;
+  border: 1px solid var(--color-blush);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.add-hour-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.hour-input {
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: 1px solid var(--color-blush);
+  font-family: inherit;
+  font-size: 13px;
+}
+
+.btn-add-hour {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: none;
+  background: var(--color-dark);
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+}
+
+/* ── BOTONES DE ACCIÓN FINAL ─────────────── */
+.form-actions {
+  margin-top: 40px;
+  display: flex;
+  gap: 16px;
+  justify-content: flex-end;
+}
+
+.btn-cancel {
+  padding: 14px 28px;
+  background: transparent;
+  color: var(--color-mid);
+  border: none;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.btn-submit {
+  padding: 14px 40px;
+  background: var(--color-dark);
+  color: var(--color-cream);
+  border: none;
+  border-radius: 14px;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(71, 40, 37, 0.2);
+  transition: all 0.2s;
+}
+
+.btn-submit:hover {
+  background: var(--color-mid);
+  transform: translateY(-2px);
+}
+
+.btn-submit:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* ── LISTADO DE CLASES (TABLA) ─────────────── */
+.class-list-container {
+  background: white;
+  border-radius: 24px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(71, 40, 37, 0.05);
+  border: 1px solid var(--color-blush);
+  animation: slideUp 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.management-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: 'Nunito', sans-serif;
+}
+
+.management-table th {
+  background: var(--color-dark);
+  color: var(--color-cream);
+  padding: 18px 20px;
+  text-align: left;
+  font-size: 14px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.management-table td {
+  padding: 16px 20px;
+  border-bottom: 1px solid rgba(211, 171, 176, 0.2);
+  color: var(--color-dark);
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.management-table tr:last-child td {
+  border-bottom: none;
+}
+
+.management-table tr:hover td {
+  background-color: rgba(253, 228, 188, 0.1);
+}
+
+.professor-info-cell {
+  display: flex;
+  flex-direction: column;
+}
+
+.prof-id {
+  font-size: 11px;
+  color: var(--color-mid);
+  font-weight: 900;
+}
+
+.prof-name {
+  font-size: 16px;
+  font-weight: 800;
+}
+
+.schedule-summary {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.summary-pill {
+  background: var(--color-white);
+  padding: 4px 10px;
+  border-radius: 8px;
+  font-size: 12px;
+  color: var(--color-dark);
+  border: 1px solid var(--color-blush);
+  display: inline-block;
+  width: fit-content;
+}
+
+.actions-cell {
+  display: flex;
+  gap: 10px;
+}
+
+.btn-action {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-edit {
+  background-color: rgba(66, 133, 244, 0.1);
+  color: #4285f4;
+}
+
+.btn-edit:hover {
+  background-color: #4285f4;
+  color: white;
+}
+
+.btn-delete {
+  background-color: rgba(234, 67, 53, 0.1);
+  color: #ea4335;
+}
+
+.btn-delete:hover {
+  background-color: #ea4335;
+  color: white;
+}
+
+.empty-list {
+  padding: 60px;
+  text-align: center;
+  color: var(--color-mid);
+  font-style: italic;
+}

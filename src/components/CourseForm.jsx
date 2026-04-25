@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import Swal from 'sweetalert2';
 
 /**
  * OBJETO MOLDE: emptyForm
@@ -37,6 +38,26 @@ const CourseForm = ({ initial = emptyForm, onSave, onCancel, saving }) => {
     // capturamos su estado booleano (e.target.checked). Si fue un input o select, su valor (e.target.value).
     [key]: e.target.type === 'checkbox' ? e.target.checked : e.target.value
   }));
+
+  /**
+   * Función que valida los campos antes de enviar los datos al componente padre.
+   */
+  const handleSubmit = () => {
+    // Verificamos que el nombre y la descripción no estén vacíos ni solo tengan espacios
+    if (!form.name.trim() || !form.description.trim()) {
+      Swal.fire({
+        title: "Campos incompletos",
+        text: "Por favor, ingresa al menos el nombre y la descripción del curso.",
+        icon: "warning",
+        confirmButtonColor: "#472825",
+        background: "#fff4e2",
+        color: "#472825"
+      });
+      return;
+    }
+    // Si pasa la validación, llamamos al onSave original
+    onSave(form);
+  };
 
   return (
     // Contenedor principal del formulario. Colocamos todo en columna con flex-col y gap-4 (espaciado).
@@ -104,9 +125,9 @@ const CourseForm = ({ initial = emptyForm, onSave, onCancel, saving }) => {
         <button className="cp-btn-secondary" onClick={onCancel}>Cancelar</button>
 
         {/* El grandioso botón verde primario. 
-            onClick={() => onSave(form)} le envía todo el empaquetado final a la página principal.
+            onClick={() => handleSubmit()} le envía todo el empaquetado final a la página principal tras validar.
             disabled={saving} es para evitar que el usuario de doble clic si el internet está lento guardando. */}
-        <button className="cp-btn-primary" onClick={() => onSave(form)} disabled={saving}>
+        <button className="cp-btn-primary" onClick={handleSubmit} disabled={saving}>
           {saving ? 'Guardando...' : 'Guardar curso'}
         </button>
       </div>

@@ -1,9 +1,6 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import NavbarPpal from '../components/NavbarPpal';
 import VulcanoFooter from '../components/VulcanoFooter';
-import EditProfileModal from '../components/EditProfileModal';
-import '../styles/Layout.css';
 
 const Review = () => {
   const navigate = useNavigate();
@@ -21,13 +18,13 @@ const Review = () => {
   // ========== ESTADOS (States) ==========
   // Almacena el nombre del usuario que escribe la review
   const [usuario, setUsuario] = useState("");
-  
+
   // Almacena el texto del comentario/opinión del usuario
   const [comentario, setComentario] = useState("");
-  
+
   // Almacena el tipo de experiencia seleccionada (Excelente, Buena, Neutral, Mejorable)
   const [tipo, setTipo] = useState("");
-  
+
   // Array que almacena todas las reviews enviadas por los usuarios
   const [reviews, setReviews] = useState([]);
 
@@ -40,7 +37,14 @@ const Review = () => {
     // Validación: Verifica que todos los campos estén completos
     // Si alguno está vacío, muestra una alerta y detiene la ejecución
     if (!usuario || !comentario || !tipo) {
-      alert("Por favor completa todos los campos");
+      Swal.fire({
+        title: "Campos incompletos",
+        text: "Por favor completa todos los campos",
+        icon: "warning",
+        confirmButtonColor: "#472825",
+        background: "#fff4e2",
+        color: "#472825"
+      });
       return;
     }
 
@@ -70,7 +74,7 @@ const Review = () => {
     // Filter crea un nuevo array sin la review que tiene el ID coincidente
     // Sólo mantiene las reviews donde el ID no coincide con el ID a eliminar
     const nuevas = reviews.filter(r => r.id !== id);
-    
+
     // Actualiza el estado con el nuevo array (sin la review eliminada)
     setReviews(nuevas);
   };
@@ -87,66 +91,12 @@ const Review = () => {
   };
 
   return (
-    <div className="layout-container">
-      <aside className="layout-sidebar">
-        <div className="sidebar-profile">
-          {profilePic ? (
-            <img
-              src={profilePic}
-              alt={`Foto de perfil de ${firstName}`}
-              className="sidebar-avatar"
-            />
-          ) : (
-            <div className="sidebar-avatar-placeholder">👤</div>
-          )}
-
-          <p className="sidebar-name">{firstName} {lastName}</p>
-          <p className="sidebar-username">@{username}</p>
-        </div>
-
-        <nav className="sidebar-nav">
-          <button
-            className="sidebar-nav-btn"
-            onClick={() => navigate('/Course')}
-          >
-            <span className="btn-icon">📚</span>
-            Cursos
-          </button>
-
-          <button
-            className="sidebar-nav-btn active"
-            onClick={() => navigate('/Review')}
-          >
-            <span className="btn-icon">📝</span>
-            Reviews
-          </button>
-        </nav>
-
-        <div className="sidebar-footer">
-          <button
-            className="sidebar-footer-btn"
-            onClick={() => setShowEditModal(true)}
-          >
-            <span>✏️</span>
-            Modificar Perfil
-          </button>
-
-          <button
-            className="sidebar-footer-btn danger"
-            onClick={handleLogout}
-          >
-            <span>🚪</span>
-            Cerrar sesión
-          </button>
-        </div>
-      </aside>
-
-      <div className="flex-1 overflow-y-auto bg-[#FFF4E2] flex flex-col">
-        {/* Barra de navegación superior */}
-        <NavbarPpal />
-
-        {/* Contenedor principal */}
-        <div className="flex-1 max-w-4xl mx-auto py-12 px-4 w-full">
+    <div className="flex flex-col min-h-screen bg-[#FFF4E2]">
+      {/* Barra de navegación superior */}
+      <NavbarPpal />
+      
+      {/* Contenedor principal */}
+      <div className="flex-1 max-w-4xl mx-auto py-12 px-4 w-full">
         {/* Título principal de la página */}
         <h1 className="text-4xl font-bold text-center text-[#472825] mb-12">
           📝 Comparte tu Experiencia
@@ -154,14 +104,14 @@ const Review = () => {
 
         {/* ========== FORMULARIO DE ENVÍO DE REVIEW ========== */}
         <form onSubmit={manejarEnvio} className="bg-[#FFF4E2] p-8 rounded-lg border-2 border-[#D3ABB0] shadow-md mb-12">
-          
+
           {/* ===== CAMPO 1: NOMBRE DEL USUARIO ===== */}
           <div className="mb-6">
             {/* Etiqueta para el campo de nombre */}
             <label htmlFor="usuario" className="block font-semibold text-[#472825] mb-2 text-lg">
               Tu nombre
             </label>
-            
+
             {/* Campo de entrada de texto:
                 - value={usuario}: vincula el valor del input con el estado 'usuario'
                 - onChange: se ejecuta cada vez que el usuario escribe, actualizando el estado
@@ -183,7 +133,7 @@ const Review = () => {
             <label htmlFor="comentario" className="block font-semibold text-[#472825] mb-2 text-lg">
               Tu comentario
             </label>
-            
+
             {/* Área de texto para comentarios largos:
                 - Similar al input pero permite múltiples líneas
                 - min-h-32: altura mínima de 32 unidades
@@ -204,7 +154,7 @@ const Review = () => {
             <label htmlFor="tipo" className="block font-semibold text-[#472825] mb-2 text-lg">
               ¿Cómo fue tu experiencia?
             </label>
-            
+
             {/* Dropdown/Select para elegir el tipo de experiencia:
                 - Muestra 4 opciones predefinidas con emojis
                 - El usuario solo puede seleccionar una
@@ -232,7 +182,7 @@ const Review = () => {
               4. Lo agrega al array de reviews
               5. Limpia los campos del formulario
           */}
-          <button 
+          <button
             type="submit"
             className="w-full bg-[#472825] text-[#FFF4E2] py-3 px-6 rounded-lg font-bold text-lg hover:bg-[#96786F] transition-colors duration-300 active:transform active:scale-95"
           >
@@ -247,7 +197,7 @@ const Review = () => {
             <div className="grid gap-5">
               {/* Map: Itera sobre cada review del array y crea una tarjeta para cada una */}
               {reviews.map((r) => (
-                <div 
+                <div
                   key={r.id}
                   className="bg-[#FFF4E2] border-2 border-[#D3ABB0] rounded-lg p-6 shadow-md hover:shadow-lg hover:-translate-y-1 transition-all duration-300"
                 >
@@ -255,19 +205,19 @@ const Review = () => {
                   <div className="text-xl font-bold text-[#472825] mb-3">
                     👤 {r.usuario}
                   </div>
-                  
+
                   {/* ===== TEXTO DEL COMENTARIO ===== */}
                   <p className="text-[#96786F] leading-relaxed mb-4">
                     "{r.comentario}"
                   </p>
-                  
+
                   {/* ===== PIE DE LA TARJETA: TIPO + BOTÓN ELIMINAR ===== */}
                   <div className="flex justify-between items-center">
                     {/* Badge/Etiqueta mostrando el tipo de experiencia */}
                     <span className="inline-block bg-[#FDE4BC] text-[#472825] px-4 py-2 rounded-full text-sm font-semibold">
                       {r.tipo}
                     </span>
-                    
+
                     {/* ===== BOTÓN ELIMINAR ===== */}
                     {/* Cuando se clickea:
                         1. Se ejecuta eliminarReview(r.id)
@@ -291,19 +241,10 @@ const Review = () => {
             </div>
           )}
         </div>
-        </div>
-
-        {/* Footer de la página */}
-        <VulcanoFooter />
       </div>
 
-      {showEditModal && user && (
-        <EditProfileModal
-          user={user}
-          onClose={() => setShowEditModal(false)}
-          onSaved={handleProfileUpdated}
-        />
-      )}
+      {/* Footer de la página */}
+      <VulcanoFooter />
     </div>
   );
 };
