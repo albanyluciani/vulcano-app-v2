@@ -15,6 +15,7 @@ import { Link } from "react-router-dom";
 import { loginUser } from "../services/api"; // función que llama a POST /api/auth/login
 import Swal from "sweetalert2";
 
+
 const VulcanoLogin = () => {
   const navigate = useNavigate();
 
@@ -26,8 +27,8 @@ const VulcanoLogin = () => {
   // ----------------------------------------------------------
   // sigIn: se ejecuta cuando el usuario hace clic en "Ingresar"
   // Envía username y password al backend (POST /api/auth/login)
-  // Si la respuesta es 200 → guarda la sesión y redirige
-  // Si la respuesta es 401 → muestra el error del backend
+  // Si la respuesta es 200 → redirigimos a /layout
+  // Si la respuesta es 401 → mostramos el error del backend
   // ----------------------------------------------------------
   async function sigIn(e) {
     e.preventDefault();

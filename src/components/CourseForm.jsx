@@ -1,19 +1,7 @@
 import { useState } from 'react';
+import { emptyForm } from '../constants/courseConstants';
 import Swal from 'sweetalert2';
 
-/**
- * OBJETO MOLDE: emptyForm
- * Estado inicial limpio. Se utiliza cuando el usuario presiona "Nuevo curso".
- * Si presiona "Editar", en lugar de esto, se usan los datos pre-existentes del curso.
- */
-export const emptyForm = {
-  name: '',
-  description: '',
-  imageUrl: '',
-  courseLevel: 'BEGINNER',
-  isPublished: false,
-  status: 'ACTIVE',
-};
 
 /**
  * COMPONENTE: CourseForm (Formulario de Cursos)

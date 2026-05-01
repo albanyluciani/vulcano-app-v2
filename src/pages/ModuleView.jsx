@@ -1,7 +1,9 @@
-import { useState, useEffect } from 'react';
+
+import { useState, useEffect, useCallback } from 'react';
+
 import Swal from 'sweetalert2';
 import ModuleCard from '../components/ModuleCard';
-import ModuleForm, { emptyModule } from '../components/ModuleForm';
+import ModuleForm from '../components/ModuleForm';
 import { getModules, createModule, updateModule, deleteModule } from '../services/moduleService';
 import '../styles/ModuleView.css';
 
@@ -30,8 +32,9 @@ const ModuleView = () => {
     });
   };
 
+
   /* ---- Carga de datos ---- */
-  const load = () => {
+  const load = useCallback(() => {
     setStatus('loading');
     getModules()
       .then((data) => {
@@ -42,23 +45,40 @@ const ModuleView = () => {
         setStatus('ok');
       })
       .catch(() => setStatus('error'));
-  };
+  }, []);
 
-  useEffect(() => { load(); }, []);
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      load();
+    }, 0);
+    return () => clearTimeout(timer);
+  }, [load]);
 
   /* ---- CRUD handlers ---- */
-  const handleCreate = (form) => {
+  const handleCreate = (form, courseId) => {
     setSaving(true);
-    createModule(form)
+    createModule(form, courseId)
       .then(() => {
         setSaving(false);
         setModal(null);
-        showToast('✅ Módulo creado exitosamente');
+        Swal.fire({
+          title: '¡Éxito!',
+          text: 'Módulo creado exitosamente',
+          icon: 'success',
+          confirmButtonText: 'Aceptar',
+          confirmButtonColor: '#472825'
+        });
         load();
       })
       .catch(() => {
         setSaving(false);
-        showToast('❌ Error al crear el módulo');
+        Swal.fire({
+          title: 'Error',
+          text: 'No se pudo crear el módulo',
+          icon: 'error',
+          confirmButtonText: 'Aceptar',
+          confirmButtonColor: '#472825'
+        });
       });
   };
 
@@ -69,12 +89,24 @@ const ModuleView = () => {
         setSaving(false);
         setModal(null);
         setEditing(null);
-        showToast('✅ Módulo actualizado');
+        Swal.fire({
+          title: '¡Éxito!',
+          text: 'Módulo actualizado',
+          icon: 'success',
+          confirmButtonText: 'Aceptar',
+          confirmButtonColor: '#472825'
+        });
         load();
       })
       .catch(() => {
         setSaving(false);
-        showToast('❌ Error al actualizar el módulo');
+        Swal.fire({
+          title: 'Error',
+          text: 'No se pudo actualizar el módulo',
+          icon: 'error',
+          confirmButtonText: 'Aceptar',
+          confirmButtonColor: '#472825'
+        });
       });
   };
 
@@ -88,13 +120,25 @@ const ModuleView = () => {
       .then(() => {
         setDeleteId(null);
         setModal(null);
-        showToast('🗑️ Módulo eliminado');
+        Swal.fire({
+          title: '¡Eliminado!',
+          text: 'Módulo eliminado',
+          icon: 'success',
+          confirmButtonText: 'Aceptar',
+          confirmButtonColor: '#472825'
+        });
         load();
       })
       .catch(() => {
         setDeleteId(null);
         setModal(null);
-        showToast('❌ Error al eliminar el módulo');
+        Swal.fire({
+          title: 'Error',
+          text: 'No se pudo eliminar el módulo',
+          icon: 'error',
+          confirmButtonText: 'Aceptar',
+          confirmButtonColor: '#472825'
+        });
       });
   };
 
@@ -259,8 +303,6 @@ const ModuleView = () => {
           </div>
         </div>
       )}
-
-
 
     </div>
   );

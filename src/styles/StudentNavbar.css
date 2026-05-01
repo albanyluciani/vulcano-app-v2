@@ -1,0 +1,195 @@
+/* =========================================
+   COMPONENTE: STUDENT NAVBAR
+   Barra de navegación exclusiva para StudentModuleView.
+   Diseño inspirado en el concepto "Magmatic Path" de Stitch.
+   Prefijo: sn- (Student Navbar)
+   ========================================= */
+
+.sn-navbar {
+  background: linear-gradient(135deg, #472825 0%, #5a3330 40%, #3a1f1c 100%);
+  padding: 0 24px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  box-shadow:
+    0 4px 20px rgba(71, 40, 37, 0.4),
+    0 1px 0 rgba(211, 171, 176, 0.1) inset;
+  position: relative;
+  z-index: 100;
+  border-bottom: 1px solid rgba(211, 171, 176, 0.12);
+}
+
+/* ---- Contenido del Navbar ---- */
+.sn-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 100%;
+  gap: 16px;
+}
+
+/* ---- Sección Izquierda ---- */
+.sn-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.sn-flame {
+  font-size: 22px;
+  filter: drop-shadow(0 0 6px rgba(253, 228, 188, 0.3));
+  animation: sn-pulse 3s ease-in-out infinite;
+}
+
+@keyframes sn-pulse {
+  0%, 100% { transform: scale(1); filter: drop-shadow(0 0 6px rgba(253, 228, 188, 0.3)); }
+  50% { transform: scale(1.08); filter: drop-shadow(0 0 10px rgba(253, 228, 188, 0.5)); }
+}
+
+.sn-brand {
+  font-size: 14px;
+  font-weight: 800;
+  color: #FDE4BC;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+  opacity: 0.9;
+}
+
+/* ---- Sección Centro ---- */
+.sn-center {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+  justify-content: center;
+  min-width: 0;
+}
+
+.sn-badge {
+  background: rgba(211, 171, 176, 0.15);
+  border: 1px solid rgba(211, 171, 176, 0.3);
+  color: #D3ABB0;
+  font-size: 11px;
+  font-weight: 800;
+  padding: 4px 12px;
+  border-radius: 20px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.sn-module-name {
+  font-size: 16px;
+  font-weight: 800;
+  color: #FDE4BC;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 320px;
+  letter-spacing: -0.02em;
+}
+
+/* ---- Sección Derecha ---- */
+.sn-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-shrink: 0;
+}
+
+.sn-progress-pill {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(253, 228, 188, 0.08);
+  border-radius: 20px;
+  padding: 6px 14px;
+}
+
+.sn-progress-text {
+  font-size: 11px;
+  font-weight: 800;
+  color: #D3ABB0;
+  white-space: nowrap;
+  letter-spacing: 0.5px;
+}
+
+.sn-progress-bar {
+  width: 48px;
+  height: 4px;
+  background: rgba(211, 171, 176, 0.2);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.sn-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #D3ABB0 0%, #FDE4BC 100%);
+  border-radius: 4px;
+  transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 0 8px rgba(211, 171, 176, 0.4);
+}
+
+.sn-back-btn {
+  background: transparent;
+  border: 1.5px solid rgba(211, 171, 176, 0.35);
+  color: #D3ABB0;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 7px 16px;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  white-space: nowrap;
+  letter-spacing: 0.3px;
+}
+
+.sn-back-btn:hover {
+  background: rgba(211, 171, 176, 0.12);
+  border-color: #D3ABB0;
+  color: #FDE4BC;
+  transform: translateX(-2px);
+}
+
+/* ---- RESPONSIVE ---- */
+
+@media (max-width: 900px) {
+  .sn-navbar {
+    height: auto;
+    padding: 12px 16px;
+  }
+
+  .sn-content {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .sn-center {
+    order: 3;
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .sn-module-name {
+    max-width: 100%;
+  }
+
+  .sn-progress-pill {
+    display: none;
+  }
+}
+
+@media (max-width: 600px) {
+  .sn-brand {
+    display: none;
+  }
+
+  .sn-back-btn {
+    font-size: 11px;
+    padding: 5px 12px;
+  }
+}

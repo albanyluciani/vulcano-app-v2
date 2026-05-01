@@ -10,6 +10,8 @@ import UserManagement from "../pages/UserManagement";
 import Layout from "../pages/layout/Layout";
 import DashboardHome from "../pages/layout/DashboardHome";
 import ClassScheduling from "../components/ClassScheduling";
+import StudentModuleView from "../pages/StudentModuleView";
+
 import ClassManagement from "../components/ClassManagement";
 import TeacherForm from "../components/TeacherForm";
 import PrivateRoute from "./PrivateRoute";

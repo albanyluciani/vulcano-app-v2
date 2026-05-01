@@ -5,6 +5,7 @@
  * Se encarga de hacer las peticiones usando la API Fetch estándar de JS.
  */
 
+// URL base - Vite hace proxy a localhost:8080
 // URL relativa: el proxy de Vite redirige /api/* a localhost:8080
 // Esto evita el error de CORS y permite que el proyecto funcione
 // en cualquier servidor, no solo en localhost.

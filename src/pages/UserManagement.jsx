@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { getAllUsers, updateUserRole } from "../services/api";
 import Swal from "sweetalert2";
-import Layout from "./layout/Layout";
 import ConfirmModal from "../components/ConfirmModal";
 import "../styles/UserManagement.css";
 
@@ -144,7 +143,7 @@ const UserManagement = () => {
     };
 
     return (
-        <Layout>
+        <>
             <div className="userman-container">
                 <div className="userman-header">
                     <h1 className="userman-title">Gestión de Usuarios</h1>
@@ -162,7 +161,7 @@ const UserManagement = () => {
                 onConfirm={handleConfirmRoleChange}
                 onCancel={() => setConfirmData(prev => ({ ...prev, isOpen: false }))}
             />
-        </Layout>
+        </>
     );
 };
 

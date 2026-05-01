@@ -53,7 +53,7 @@ export const successAlert = (title, timer) => {
     });
 }
 
-export function alertaEliminarClase(mensaje, icono, url){
+export function alertaEliminarClase(){
     return Swal.fire({
         title: "Estas seguro que deseas eliminar tu clase?",
         text: "Al cancelar tendras que agendar una nueva clase",

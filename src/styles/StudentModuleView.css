@@ -1,0 +1,415 @@
+/* =========================================
+    COMPONENTE: STUDENT MODULE VIEW
+    Vista del estudiante: contenido + sidebar de navegación
+    Prefijo: smv- (Student Module View)
+    ========================================= */
+
+/* ---- LAYOUT PRINCIPAL ---- */
+
+.smv-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: var(--color-white);
+}
+
+.smv-body {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+}
+
+/* ---- SIDEBAR (izquierda) ---- */
+
+.smv-sidebar {
+  width: 320px;
+  background: var(--color-cream);
+  border-right: 3px solid var(--color-blush);
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  position: sticky;
+  top: 0;
+  height: calc(100vh - 60px);
+  overflow-y: auto;
+}
+
+.smv-sidebar-header {
+  padding: 20px;
+  border-bottom: 2px solid var(--color-blush);
+  background: linear-gradient(180deg, var(--color-cream) 0%, var(--color-white) 100%);
+}
+
+.smv-sidebar-title {
+  font-size: 18px;
+  font-weight: 900;
+  color: var(--color-dark);
+  margin: 0 0 4px;
+}
+
+.smv-sidebar-subtitle {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--color-mid);
+  margin: 0;
+}
+
+.smv-modules-list {
+  flex: 1;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* ---- MODULO CARD EN SIDEBAR ---- */
+
+.smv-module-card {
+  background: var(--color-white);
+  border: 2px solid var(--color-blush);
+  border-radius: 14px;
+  padding: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.smv-module-card:hover {
+  transform: translateX(4px);
+  border-color: var(--color-mid);
+  box-shadow: 0 4px 0 var(--color-blush);
+}
+
+.smv-module-card--active {
+  background: var(--color-dark);
+  border-color: var(--color-dark);
+  box-shadow: 0 4px 0 var(--color-mid);
+}
+
+.smv-module-card--active .smv-card-title {
+  color: var(--color-cream);
+}
+
+.smv-module-card--active .smv-card-duration {
+  color: var(--color-blush);
+}
+
+.smv-module-card--inactive {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.smv-card-title {
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--color-dark);
+  margin: 0 0 6px;
+  line-height: 1.3;
+}
+
+.smv-card-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.smv-card-number {
+  font-size: 11px;
+  font-weight: 900;
+  color: var(--color-mid);
+  background: var(--color-blush);
+  padding: 3px 8px;
+  border-radius: 8px;
+}
+
+.smv-card-duration {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--color-mid);
+}
+
+/* ---- CONTENIDO PRINCIPAL (derecha) ---- */
+
+.smv-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+
+.smv-content-inner {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 32px 28px 80px;
+  width: 100%;
+}
+
+/* ---- HEADER DEL MÓDULO ---- */
+
+.smv-content-header {
+  margin-bottom: 28px;
+}
+
+.smv-content-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--color-cream);
+  border: 2px solid var(--color-blush);
+  border-radius: 12px;
+  padding: 6px 14px;
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--color-dark);
+  margin-bottom: 12px;
+}
+
+.smv-content-title {
+  font-size: 28px;
+  font-weight: 900;
+  color: var(--color-dark);
+  margin: 0 0 12px;
+  line-height: 1.2;
+}
+
+.smv-content-meta {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.smv-meta-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--color-mid);
+}
+
+/* ---- SECCIONES DE CONTENIDO ---- */
+
+.smv-section {
+  background: var(--color-white);
+  border: 2px solid var(--color-blush);
+  border-radius: 20px;
+  padding: 24px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 0 var(--color-blush);
+}
+
+.smv-section-title {
+  font-size: 16px;
+  font-weight: 900;
+  color: var(--color-dark);
+  margin: 0 0 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.smv-section-icon {
+  font-size: 18px;
+}
+
+.smv-text-content {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--color-dark);
+  line-height: 1.7;
+  white-space: pre-wrap;
+}
+
+/* ---- VIDEO ---- */
+
+.smv-video-container {
+  position: relative;
+  width: 100%;
+  padding-top: 56.25%;
+  background: var(--color-dark);
+  border-radius: 16px;
+  overflow: hidden;
+  margin-bottom: 20px;
+}
+
+.smv-video-iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
+.smv-video-placeholder {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, var(--color-dark) 0%, #5a3330 100%);
+  color: var(--color-cream);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+/* ---- JUEGO INTERACTIVO (placeholder) ---- */
+
+.smv-game-container {
+  background: linear-gradient(135deg, var(--color-cream) 0%, var(--color-blush) 100%);
+  border: 3px solid var(--color-dark);
+  border-radius: 20px;
+  padding: 40px 24px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.smv-game-iframe {
+  width: 100%;
+  height: 500px;
+  border: none;
+  border-radius: 12px;
+  background: white;
+}
+
+.markdown-body {
+  font-family: inherit;
+  color: var(--color-dark);
+}
+
+.markdown-body p {
+  margin-bottom: 1em;
+}
+
+.markdown-body h1, .markdown-body h2, .markdown-body h3 {
+  color: var(--color-dark);
+  margin-top: 1.5em;
+  margin-bottom: 0.5em;
+}
+
+.smv-game-icon {
+  font-size: 56px;
+  margin-bottom: 16px;
+}
+
+.smv-game-title {
+  font-size: 20px;
+  font-weight: 900;
+  color: var(--color-dark);
+  margin: 0 0 8px;
+}
+
+.smv-game-desc {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--color-mid);
+  margin: 0 0 20px;
+}
+
+.smv-game-btn {
+  background: var(--color-dark);
+  color: var(--color-cream);
+  border: none;
+  border-radius: 14px;
+  padding: 14px 32px;
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  cursor: pointer;
+  box-shadow: 0 4px 0 var(--color-mid);
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.smv-game-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 0 var(--color-mid);
+}
+
+/* ---- ESTADOS ---- */
+
+.smv-loading,
+.smv-error,
+.smv-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  text-align: center;
+  gap: 12px;
+}
+
+.smv-loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid var(--color-blush);
+  border-top-color: var(--color-dark);
+  border-radius: 50%;
+  animation: smv-spin 0.7s linear infinite;
+}
+
+@keyframes smv-spin {
+  to { transform: rotate(360deg); }
+}
+
+.smv-error-icon {
+  font-size: 48px;
+}
+
+.smv-empty-icon {
+  font-size: 56px;
+}
+
+.smv-error-text,
+.smv-empty-text {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--color-mid);
+  margin: 0;
+}
+
+/* ---- RESPONSIVE ---- */
+
+@media (max-width: 900px) {
+  .smv-sidebar {
+    width: 100%;
+    height: auto;
+    position: relative;
+    border-right: none;
+    border-bottom: 3px solid var(--color-blush);
+  }
+
+  .smv-modules-list {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .smv-module-card {
+    flex: 1;
+    min-width: 140px;
+  }
+
+  .smv-content-inner {
+    padding: 20px 16px 60px;
+  }
+}
+
+@media (max-width: 600px) {
+  .smv-content-title {
+    font-size: 22px;
+  }
+
+  .smv-section {
+    padding: 18px;
+    border-radius: 16px;
+  }
+
+  .smv-game-container {
+    padding: 28px 16px;
+  }
+}
